@@ -1,7 +1,7 @@
 {
   "name": "bookrush-mobile",
   "version": "1.0.0",
-  "description": "A production-style React Native book commerce and reader community app built with Expo and TypeScript.",
+  "description": "A React Native book discovery, ordering and reader community app built with Expo and TypeScript.",
   "main": "expo-router/entry",
   "private": true,
   "license": "MIT",

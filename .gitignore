@@ -31,7 +31,8 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env
+.env.*
 
 # typescript
 *.tsbuildinfo
@@ -41,6 +42,5 @@ yarn-error.*
 /android
 
 # tooling
-.claude/
 coverage/
 .vscode/
