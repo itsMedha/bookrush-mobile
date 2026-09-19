@@ -8,8 +8,8 @@ import { colors, layout, radius, shadows, spacing } from '@/theme';
 import { useToastStore, type Toast } from '@/store/toastStore';
 
 const TOAST_DURATION_MS = 3200;
-/** Sits above the tab bar / sticky purchase bars so it never covers header controls. */
-const CLEARANCE_ABOVE_BARS = 84;
+/** Clears the tab bar, sticky purchase bars and the community FAB. */
+const CLEARANCE_ABOVE_BARS = layout.tabBarHeight + 90;
 
 const icons: Record<Toast['tone'], IconName> = {
   default: 'information-circle',
