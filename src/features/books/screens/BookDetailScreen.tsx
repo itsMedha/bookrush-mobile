@@ -8,10 +8,10 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BookCover } from '@/components/book/BookCover';
-import { BookRail } from '@/components/book/BookRail';
-import { BookRailSkeleton } from '@/components/book/BookSkeletons';
-import { Price } from '@/components/book/Price';
+import { BookCover } from '@/components/books/BookCover';
+import { BookRail } from '@/components/books/BookRail';
+import { BookRailSkeleton } from '@/components/books/BookSkeletons';
+import { Price } from '@/components/books/Price';
 import { AsyncBoundary } from '@/components/feedback/AsyncBoundary';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -25,7 +25,7 @@ import { StickyBar } from '@/components/ui/StickyBar';
 import { Text } from '@/components/ui/Text';
 import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
 import { errorMessage } from '@/services/http';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore } from '@/stores/cartStore';
 import { colors, layout, radius, spacing } from '@/theme';
 import { formatPrice } from '@/utils/format';
 import { routes } from '@/utils/routes';

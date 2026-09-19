@@ -7,8 +7,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Wordmark } from '@/components/brand/Wordmark';
 import { ToastHost } from '@/components/feedback/ToastHost';
 import { useStoresHydrated } from '@/hooks/useHydration';
-import { queryClient } from '@/lib/queryClient';
-import { selectIsSignedIn, useAuthStore } from '@/store/authStore';
+import { queryClient } from '@/services/queryClient';
+import { selectIsSignedIn, useAuthStore } from '@/stores/authStore';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
@@ -38,7 +38,10 @@ export default function RootLayout() {
                   options={{ animation: 'fade', gestureEnabled: false }}
                 />
                 <Stack.Screen name="orders/[id]" />
-                <Stack.Screen name="create-post" options={{ animation: 'slide_from_bottom' }} />
+                <Stack.Screen
+                  name="community/create"
+                  options={{ animation: 'slide_from_bottom' }}
+                />
                 <Stack.Screen name="clubs/[id]" />
                 <Stack.Screen name="addresses" />
                 <Stack.Screen name="payments" />

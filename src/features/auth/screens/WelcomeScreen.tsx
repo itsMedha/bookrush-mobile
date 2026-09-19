@@ -5,7 +5,7 @@ import { Wordmark } from '@/components/brand/Wordmark';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { layout, spacing } from '@/theme';
 import { routes } from '@/utils/routes';
 import { CoverCollage } from '../components/CoverCollage';

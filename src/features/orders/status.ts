@@ -1,4 +1,5 @@
-import type { Order, OrderStatus } from '@/types';
+import { paymentMethods } from '@/data/users';
+import type { Order, OrderStatus, PaymentMethodId } from '@/types';
 import { ORDER_STATUSES } from '@/types';
 import { formatShortDate, formatTime } from '@/utils/date';
 
@@ -36,3 +37,6 @@ export function arrivalLabel(order: Order): string {
     ? `Arriving in ${order.etaMinutes} min`
     : order.estimatedDelivery;
 }
+
+export const paymentLabel = (id: PaymentMethodId): string =>
+  paymentMethods.find((method) => method.id === id)?.title ?? id;

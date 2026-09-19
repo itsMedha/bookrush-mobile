@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { useCartStore } from '@/store/cartStore';
-import { useCommunityStore } from '@/store/communityStore';
-import { useSearchStore } from '@/store/searchStore';
-import { useUserStore } from '@/store/userStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useCartStore } from '@/stores/cartStore';
+import { useCommunityStore } from '@/stores/communityStore';
+import { useSearchStore } from '@/stores/searchStore';
+import { useUserStore } from '@/stores/userStore';
 
 const persistedStores = [
   useAuthStore,

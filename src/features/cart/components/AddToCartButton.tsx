@@ -14,8 +14,8 @@ import Animated, {
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Text } from '@/components/ui/Text';
-import { useCartStore } from '@/store/cartStore';
-import { toast } from '@/store/toastStore';
+import { useCartStore } from '@/stores/cartStore';
+import { toast } from '@/stores/toastStore';
 import { colors, duration, radius, spacing, spring } from '@/theme';
 import type { Book } from '@/types';
 import { haptics } from '@/utils/haptics';

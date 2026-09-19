@@ -18,7 +18,7 @@ interface ScreenHeaderProps {
   subtitle?: string;
 }
 
-/** Back button (with safe fallback to Home) + title + optional trailing actions. */
+/** Back falls back to Home when there is nothing to pop (deep links, refreshes). */
 export function ScreenHeader({
   title,
   showBack = true,

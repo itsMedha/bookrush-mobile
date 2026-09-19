@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
 import { Text } from '@/components/ui/Text';
-import { MAX_QUANTITY_PER_BOOK } from '@/store/cartStore';
+import { MAX_QUANTITY_PER_BOOK } from '@/stores/cartStore';
 import { colors, spacing } from '@/theme';
 import type { CartItem } from '@/types';
 import { formatPrice } from '@/utils/format';

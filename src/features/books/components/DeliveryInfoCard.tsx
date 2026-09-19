@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
-import { selectSelectedAddress, useUserStore } from '@/store/userStore';
+import { selectSelectedAddress, useUserStore } from '@/stores/userStore';
 import { colors, radius, spacing } from '@/theme';
 import type { Book } from '@/types';
 import {

@@ -9,7 +9,6 @@ interface SubScreenProps {
   children: ReactNode;
 }
 
-/** Frame for the small account screens: back header + padded, width-capped scroll area. */
 export function SubScreen({ title, children }: SubScreenProps) {
   return (
     <Screen>

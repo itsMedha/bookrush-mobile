@@ -15,7 +15,6 @@ interface ListRowProps {
   testID?: string;
 }
 
-/** Settings/profile style row: icon tile, title, optional subtitle and chevron. */
 export function ListRow({
   icon,
   title,

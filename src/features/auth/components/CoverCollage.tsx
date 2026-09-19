@@ -9,7 +9,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { booksById } from '@/data/books';
 import { colors } from '@/theme';
 

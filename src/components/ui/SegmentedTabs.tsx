@@ -16,7 +16,6 @@ interface SegmentedTabsProps<K extends string> {
   onChange: (key: K) => void;
 }
 
-/** Equal-width tabs with a spring-animated underline. */
 export function SegmentedTabs<K extends string>({ items, value, onChange }: SegmentedTabsProps<K>) {
   const [width, setWidth] = useState(0);
   const activeIndex = Math.max(

@@ -17,7 +17,6 @@ interface OptionCardProps {
   testID?: string;
 }
 
-/** Radio-style selectable card (delivery speed, payment method, addresses). */
 export function OptionCard({
   title,
   subtitle,

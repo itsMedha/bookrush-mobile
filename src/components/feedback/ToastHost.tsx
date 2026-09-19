@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, radius, shadows, spacing } from '@/theme';
-import { useToastStore, type Toast } from '@/store/toastStore';
+import { useToastStore, type Toast } from '@/stores/toastStore';
 
 const TOAST_DURATION_MS = 3200;
 /** Clears the tab bar, sticky purchase bars and the community FAB. */
@@ -17,7 +17,7 @@ const icons: Record<Toast['tone'], IconName> = {
   error: 'alert-circle',
 };
 
-/** Renders the current toast above everything else, just clear of the bottom bars. Mount once at the app root. */
+/** Mount once at the app root. */
 export function ToastHost() {
   const toast = useToastStore((state) => state.toast);
   const hide = useToastStore((state) => state.hide);

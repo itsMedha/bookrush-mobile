@@ -1,7 +1,7 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { booksById } from '@/data/books';
-import { useCartStore } from '@/store/cartStore';
-import { useToastStore } from '@/store/toastStore';
+import { useCartStore } from '@/stores/cartStore';
+import { useToastStore } from '@/stores/toastStore';
 import { mockRouter } from '@/test/routerMock';
 import { renderWithProviders } from '@/test/renderWithProviders';
 import type { Book } from '@/types';

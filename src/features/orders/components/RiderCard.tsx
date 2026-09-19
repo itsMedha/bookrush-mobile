@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';
-import { toast } from '@/store/toastStore';
+import { toast } from '@/stores/toastStore';
 import { spacing } from '@/theme';
 import type { Rider } from '@/types';
 import { formatCount } from '@/utils/format';

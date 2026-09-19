@@ -2,8 +2,8 @@ import { StyleSheet, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { Text } from '@/components/ui/Text';
 import { currentUser, profileStats } from '@/data/users';
-import { useAuthStore } from '@/store/authStore';
-import { useCommunityStore } from '@/store/communityStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useCommunityStore } from '@/stores/communityStore';
 import { colors, layout, radius, spacing } from '@/theme';
 import { formatCount } from '@/utils/format';
 

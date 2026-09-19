@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Badge } from '@/components/ui/Badge';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Text } from '@/components/ui/Text';

@@ -5,8 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CartButton } from '@/components/ui/CartButton';
 import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';
-import { toast } from '@/store/toastStore';
-import { useUserStore } from '@/store/userStore';
+import { toast } from '@/stores/toastStore';
+import { useUserStore } from '@/stores/userStore';
 import { colors, layout, spacing } from '@/theme';
 import { routes } from '@/utils/routes';
 

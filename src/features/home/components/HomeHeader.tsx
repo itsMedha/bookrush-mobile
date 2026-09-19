@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { Avatar } from '@/components/ui/Avatar';
 import { CartButton } from '@/components/ui/CartButton';
 import { Text } from '@/components/ui/Text';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { layout, spacing } from '@/theme';
 import { greetingFor } from '@/utils/date';
 import { routes } from '@/utils/routes';

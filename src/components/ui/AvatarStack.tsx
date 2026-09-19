@@ -12,7 +12,6 @@ interface AvatarStackProps {
   max?: number;
 }
 
-/** Overlapping avatars with an optional total-count label. */
 export function AvatarStack({ users, total, max = 4 }: AvatarStackProps) {
   const visible = users.slice(0, max);
   const extra = total !== undefined ? total - visible.length : 0;

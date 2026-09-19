@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queryKeys';
+import { queryKeys } from '@/services/queryKeys';
 import { communityService, type CreatePostInput } from '@/services/communityService';
-import { useCommunityStore } from '@/store/communityStore';
+import { useCommunityStore } from '@/stores/communityStore';
 import type { FeedPost, FeedTab } from '@/types';
 
 export function useFeed(tab: FeedTab) {

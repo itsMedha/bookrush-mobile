@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Text } from '@/components/ui/Text';
-import { selectSelectedAddress, useUserStore } from '@/store/userStore';
+import { selectSelectedAddress, useUserStore } from '@/stores/userStore';
 import { colors, radius, spacing } from '@/theme';
 import { formatPrice } from '@/utils/format';
 import { FREE_EXPRESS_THRESHOLD, STANDARD_ETA_LABEL } from '@/utils/pricing';

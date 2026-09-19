@@ -11,7 +11,7 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SegmentedTabs, type TabItem } from '@/components/ui/SegmentedTabs';
 import { CURRENT_USER_ID } from '@/data/users';
 import { usePostsByAuthor } from '@/features/community/hooks';
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { colors, layout, spacing } from '@/theme';
 import { routes } from '@/utils/routes';
 import { ProfileHeader } from '../components/ProfileHeader';

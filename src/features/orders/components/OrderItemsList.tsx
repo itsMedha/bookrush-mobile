@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Divider } from '@/components/ui/Divider';
 import { Text } from '@/components/ui/Text';
 import { spacing } from '@/theme';

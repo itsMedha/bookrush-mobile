@@ -8,7 +8,6 @@ interface WordmarkProps {
   tone?: 'dark' | 'light';
 }
 
-/** BookRush brand lockup: ink monogram with an amber spine + serif wordmark. */
 export function Wordmark({ size = 'md', tone = 'dark' }: WordmarkProps) {
   const mark = size === 'lg' ? 44 : 32;
   const dark = tone === 'dark';

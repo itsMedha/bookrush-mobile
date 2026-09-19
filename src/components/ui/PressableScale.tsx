@@ -12,7 +12,6 @@ export interface PressableScaleProps extends Omit<PressableProps, 'style' | 'chi
   scaleTo?: number;
 }
 
-/** Pressable with a springy press-in/out. The base for every tappable surface. */
 export function PressableScale({
   style,
   children,

@@ -5,8 +5,8 @@ import { BottomSheet } from '@/components/ui/BottomSheet';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { AddressForm } from '@/features/addresses/AddressForm';
-import { toast } from '@/store/toastStore';
-import { useUserStore } from '@/store/userStore';
+import { toast } from '@/stores/toastStore';
+import { useUserStore } from '@/stores/userStore';
 import { spacing } from '@/theme';
 import { SubScreen } from '../components/SubScreen';
 

@@ -17,7 +17,7 @@ import { useLogin, useSocialLogin } from '../hooks';
 import { loginSchema, type LoginForm } from '../schemas';
 
 /** Demo credentials are pre-filled so reviewers can get straight in. */
-const DEMO_CREDENTIALS: LoginForm = { email: 'medha@bookrush.app', password: 'bookrush' };
+const DEMO_CREDENTIALS: LoginForm = { email: 'reader@bookrush.app', password: 'bookrush' };
 
 export default function LoginScreen() {
   const login = useLogin();

@@ -6,9 +6,9 @@ import { ConfirmSheet } from '@/components/ui/ConfirmSheet';
 import { Divider } from '@/components/ui/Divider';
 import { ListRow, ToggleRow } from '@/components/ui/ListRow';
 import { Text } from '@/components/ui/Text';
-import { useDevStore } from '@/store/devStore';
-import { resetDemoData } from '@/store/reset';
-import { toast } from '@/store/toastStore';
+import { useDevStore } from '@/stores/devStore';
+import { resetDemoData } from '@/stores/reset';
+import { toast } from '@/stores/toastStore';
 import { spacing } from '@/theme';
 import { SubScreen } from '../components/SubScreen';
 

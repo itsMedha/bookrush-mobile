@@ -8,7 +8,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { selectCartCount, useCartStore } from '@/store/cartStore';
+import { selectCartCount, useCartStore } from '@/stores/cartStore';
 import { colors, radius, spring } from '@/theme';
 import { routes } from '@/utils/routes';
 import { IconButton } from './IconButton';
@@ -18,7 +18,6 @@ interface CartButtonProps {
   variant?: 'plain' | 'filled' | 'inverse';
 }
 
-/** Cart entry point with a badge that pops whenever the item count changes. */
 export function CartButton({ variant = 'filled' }: CartButtonProps) {
   const router = useRouter();
   const count = useCartStore(selectCartCount);

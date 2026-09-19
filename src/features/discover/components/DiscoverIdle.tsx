@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { trendingSearches } from '@/data/books';
 import { useGenreCounts } from '@/features/books/hooks';
-import { useSearchStore } from '@/store/searchStore';
+import { useSearchStore } from '@/stores/searchStore';
 import { colors, layout, radius, spacing } from '@/theme';
 import type { Genre } from '@/types';
 import { pluralize } from '@/utils/format';

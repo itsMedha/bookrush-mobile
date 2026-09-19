@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Text';
 import { TextField } from '@/components/ui/TextField';
 import { errorMessage } from '@/services/http';
-import { toast } from '@/store/toastStore';
+import { toast } from '@/stores/toastStore';
 import { spacing } from '@/theme';
 import { usePasswordReset } from '../hooks';
 import { resetSchema, type ResetForm } from '../schemas';

@@ -10,7 +10,7 @@ export const routes = {
   profile: '/profile',
   cart: '/cart',
   checkout: '/checkout',
-  createPost: '/create-post',
+  createPost: '/community/create',
   addresses: '/addresses',
   payments: '/payments',
   notifications: '/notifications',

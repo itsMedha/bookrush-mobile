@@ -23,7 +23,6 @@ const toneColors = {
   sageSoft: colors.sageSoft,
 } as const;
 
-/** Surface container. Pressable when `onPress` is provided. */
 export function Card({
   children,
   padding = 'lg',

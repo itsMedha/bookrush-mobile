@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { authService, type SignupInput } from '@/services/authService';
-import { useAuthStore } from '@/store/authStore';
-import { useUserStore } from '@/store/userStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useUserStore } from '@/stores/userStore';
 
 export function useLogin() {
   const signIn = useAuthStore((state) => state.signIn);

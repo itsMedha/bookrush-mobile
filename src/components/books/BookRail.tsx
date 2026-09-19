@@ -13,7 +13,6 @@ interface BookRailProps {
 const keyExtractor = (book: Book) => book.id;
 const Separator = () => <View style={styles.separator} />;
 
-/** Horizontal, virtualised rail of book cards. */
 function BookRailBase({ books, cardWidth = BOOK_CARD_WIDTH, showDelivery = false }: BookRailProps) {
   const renderItem = useCallback<ListRenderItem<Book>>(
     ({ item }) => <BookCard book={item} width={cardWidth} showDelivery={showDelivery} />,

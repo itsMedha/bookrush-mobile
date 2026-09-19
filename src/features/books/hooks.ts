@@ -1,7 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queryKeys';
+import { queryKeys } from '@/services/queryKeys';
 import { bookService } from '@/services/bookService';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '@/stores/userStore';
 import type { Book, SearchParams } from '@/types';
 import { useMemo } from 'react';
 

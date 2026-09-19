@@ -19,7 +19,6 @@ interface BookRowProps {
 
 const COVER_WIDTH = 76;
 
-/** Horizontal result card: cover, title, author, rating, price and delivery badge. */
 function BookRowBase({ book, onPress }: BookRowProps) {
   const router = useRouter();
   const open = useCallback(() => {

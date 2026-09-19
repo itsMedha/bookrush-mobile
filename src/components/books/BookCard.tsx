@@ -19,7 +19,6 @@ interface BookCardProps {
 
 export const BOOK_CARD_WIDTH = 132;
 
-/** Vertical book card used in rails and grids. */
 function BookCardBase({ book, width = BOOK_CARD_WIDTH, showDelivery = false }: BookCardProps) {
   const router = useRouter();
   const open = useCallback(() => router.push(routes.book(book.id)), [router, book.id]);

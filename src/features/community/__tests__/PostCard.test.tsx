@@ -2,7 +2,7 @@ import { screen, userEvent } from '@testing-library/react-native';
 import { booksById } from '@/data/books';
 import { posts } from '@/data/posts';
 import { usersById } from '@/data/users';
-import { useCommunityStore } from '@/store/communityStore';
+import { useCommunityStore } from '@/stores/communityStore';
 import { renderWithProviders } from '@/test/renderWithProviders';
 import type { Book, FeedPost } from '@/types';
 import { PostCard } from '../components/PostCard';

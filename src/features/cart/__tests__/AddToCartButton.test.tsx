@@ -1,7 +1,7 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import { booksById } from '@/data/books';
-import { selectQuantityOf, useCartStore } from '@/store/cartStore';
-import { useToastStore } from '@/store/toastStore';
+import { selectQuantityOf, useCartStore } from '@/stores/cartStore';
+import { useToastStore } from '@/stores/toastStore';
 import type { Book } from '@/types';
 import { AddToCartButton } from '../components/AddToCartButton';
 

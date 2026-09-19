@@ -81,7 +81,6 @@ function TabItem({ meta, focused, showDot, onPress, onLongPress, testID }: TabIt
   );
 }
 
-/** Minimal bottom tab bar: hairline top border, animated pill behind the active icon. */
 export function TabBar({ state, navigation }: TabBarProps) {
   const insets = useSafeAreaInsets();
   const activeOrders = useActiveOrderCount();

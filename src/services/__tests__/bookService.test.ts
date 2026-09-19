@@ -1,4 +1,4 @@
-import { useDevStore } from '@/store/devStore';
+import { useDevStore } from '@/stores/devStore';
 import { bookService, filterBooks } from '../bookService';
 
 describe('filterBooks', () => {

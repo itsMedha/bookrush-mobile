@@ -1,4 +1,4 @@
-import { queryClient } from '@/lib/queryClient';
+import { queryClient } from '@/services/queryClient';
 import { communityService } from '@/services/communityService';
 import { orderService } from '@/services/orderService';
 import { useCartStore } from './cartStore';

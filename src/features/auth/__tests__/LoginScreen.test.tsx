@@ -1,6 +1,6 @@
 import { screen, userEvent, waitFor } from '@testing-library/react-native';
-import { useAuthStore } from '@/store/authStore';
-import { useDevStore } from '@/store/devStore';
+import { useAuthStore } from '@/stores/authStore';
+import { useDevStore } from '@/stores/devStore';
 import { renderWithProviders } from '@/test/renderWithProviders';
 import LoginScreen from '../screens/LoginScreen';
 
@@ -33,7 +33,7 @@ describe('LoginScreen', () => {
     await user.press(screen.getByTestId('login-submit'));
 
     await waitFor(() => expect(useAuthStore.getState().session).not.toBeNull());
-    expect(useAuthStore.getState().session?.email).toBe('medha@bookrush.app');
+    expect(useAuthStore.getState().session?.email).toBe('reader@bookrush.app');
   });
 
   it('surfaces a friendly error when the network is down', async () => {

@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/Card';
 import { Divider } from '@/components/ui/Divider';
 import { ToggleRow } from '@/components/ui/ListRow';
-import { useUserStore, type NotificationKey } from '@/store/userStore';
+import { useUserStore, type NotificationKey } from '@/stores/userStore';
 import { spacing } from '@/theme';
 import { View } from 'react-native';
 import { SubScreen } from '../components/SubScreen';

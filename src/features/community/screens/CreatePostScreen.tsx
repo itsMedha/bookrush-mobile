@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Icon, type IconName } from '@/components/ui/Icon';
@@ -19,8 +19,8 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { currentUser } from '@/data/users';
 import { errorMessage } from '@/services/http';
-import { useAuthStore } from '@/store/authStore';
-import { toast } from '@/store/toastStore';
+import { useAuthStore } from '@/stores/authStore';
+import { toast } from '@/stores/toastStore';
 import { colors, layout, maxFontSizeMultiplier, radius, spacing, typography } from '@/theme';
 import type { Book } from '@/types';
 import { BookPickerSheet } from '../components/BookPickerSheet';

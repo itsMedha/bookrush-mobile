@@ -13,7 +13,6 @@ interface ChipProps {
   testID?: string;
 }
 
-/** Selectable pill for genres, filters and suggestions. */
 export function Chip({ label, selected = false, onPress, icon, testID }: ChipProps) {
   return (
     <PressableScale

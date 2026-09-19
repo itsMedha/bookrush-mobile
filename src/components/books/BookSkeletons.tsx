@@ -17,7 +17,6 @@ export function BookCardSkeleton({ width = BOOK_CARD_WIDTH }: { width?: number }
   );
 }
 
-/** Horizontal rail placeholder that lines up with the real BookRail. */
 export function BookRailSkeleton({ count = 3 }: { count?: number }) {
   return (
     <View style={styles.rail}>

@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { BookCover } from '@/components/book/BookCover';
+import { BookCover } from '@/components/books/BookCover';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Text } from '@/components/ui/Text';
 import { booksById } from '@/data/books';
-import { useCommunityStore } from '@/store/communityStore';
+import { useCommunityStore } from '@/stores/communityStore';
 import { colors, radius, spacing } from '@/theme';
 import type { ClubSummary } from '@/types';
 import { formatCount } from '@/utils/format';

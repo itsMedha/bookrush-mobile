@@ -1,13 +1,13 @@
 import { Image } from 'expo-image';
 import { memo, useCallback, useState } from 'react';
 import { Pressable, Share, StyleSheet, View } from 'react-native';
-import { BookRail } from '@/components/book/BookRail';
+import { BookRail } from '@/components/books/BookRail';
 import { Avatar } from '@/components/ui/Avatar';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { CURRENT_USER_ID } from '@/data/users';
-import { useCommunityStore } from '@/store/communityStore';
-import { toast } from '@/store/toastStore';
+import { useCommunityStore } from '@/stores/communityStore';
+import { toast } from '@/stores/toastStore';
 import { colors, layout, radius, spacing } from '@/theme';
 import type { FeedPost } from '@/types';
 import { timeAgo } from '@/utils/date';
