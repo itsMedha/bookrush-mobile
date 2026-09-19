@@ -32,7 +32,7 @@ export function ActiveOrderCard({ order }: { order: Order }) {
 
       <View style={styles.body}>
         <View style={styles.text}>
-          <Text variant="heading1" color="textInverse" testID="active-status">
+          <Text variant="heading2" color="textInverse" testID="active-status">
             {STATUS_COPY[order.status].title}
           </Text>
           <Text variant="heading3" color="accent" testID="active-eta">

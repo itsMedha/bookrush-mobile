@@ -100,7 +100,6 @@ export function AddToCartButton({ book }: AddToCartButtonProps) {
               exiting={FadeOutUp.duration(duration.instant)}
               style={styles.label}
             >
-              <Icon name="bag-add-outline" size={18} color="ink" />
               <Text variant="button" color="ink" numberOfLines={1}>
                 {outOfStock ? 'Out of stock' : 'Add to Cart'}
               </Text>

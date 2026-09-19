@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon, type IconName } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
@@ -8,6 +8,8 @@ import { colors, layout, radius, shadows, spacing } from '@/theme';
 import { useToastStore, type Toast } from '@/store/toastStore';
 
 const TOAST_DURATION_MS = 3200;
+/** Sits above the tab bar / sticky purchase bars so it never covers header controls. */
+const CLEARANCE_ABOVE_BARS = 84;
 
 const icons: Record<Toast['tone'], IconName> = {
   default: 'information-circle',
@@ -15,7 +17,7 @@ const icons: Record<Toast['tone'], IconName> = {
   error: 'alert-circle',
 };
 
-/** Renders the current toast above everything else. Mount once at the app root. */
+/** Renders the current toast above everything else, just clear of the bottom bars. Mount once at the app root. */
 export function ToastHost() {
   const toast = useToastStore((state) => state.toast);
   const hide = useToastStore((state) => state.hide);
@@ -31,11 +33,11 @@ export function ToastHost() {
   if (!toast) return null;
 
   return (
-    <View style={[styles.layer, { top: insets.top + spacing.sm }]}>
+    <View style={[styles.layer, { bottom: insets.bottom + CLEARANCE_ABOVE_BARS }]}>
       <Animated.View
         key={toast.id}
-        entering={FadeInUp.springify().damping(18)}
-        exiting={FadeOutUp.duration(160)}
+        entering={FadeInDown.springify().damping(18)}
+        exiting={FadeOutDown.duration(160)}
         accessibilityLiveRegion="polite"
         accessibilityRole="alert"
         style={styles.toast}
