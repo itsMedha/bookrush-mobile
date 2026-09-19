@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { Icon } from '@/components/ui/Icon';
-import { colors, duration, radius, spacing, spring } from '@/theme';
+import { colors, duration, radius, shadows, spacing, spring } from '@/theme';
 
 const RIDER_SIZE = 36;
 const ENDPOINT_SIZE = 32;
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     height: 4,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(250, 248, 244, 0.2)',
+    backgroundColor: colors.onInkTrack,
   },
   lineFill: {
     position: 'absolute',
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     width: ENDPOINT_SIZE,
     height: ENDPOINT_SIZE,
     borderRadius: radius.pill,
-    backgroundColor: 'rgba(250, 248, 244, 0.16)',
+    backgroundColor: colors.onInkSurface,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -103,6 +103,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0px 4px 12px rgba(217, 119, 50, 0.45)',
+    boxShadow: shadows.riderGlow,
   },
 });

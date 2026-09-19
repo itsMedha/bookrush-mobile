@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 3,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: colors.coverHighlight,
     pointerEvents: 'none',
   },
 });

@@ -35,6 +35,10 @@ export const colors = {
   star: '#E0A11B',
 
   overlay: 'rgba(23, 23, 23, 0.48)',
+  /** Translucent layers that sit on top of ink or artwork rather than the page. */
+  coverHighlight: 'rgba(255, 255, 255, 0.18)',
+  onInkSurface: 'rgba(250, 248, 244, 0.16)',
+  onInkTrack: 'rgba(250, 248, 244, 0.2)',
   skeleton: '#ECE7DC',
   skeletonHighlight: '#F6F2EA',
   transparent: 'transparent',

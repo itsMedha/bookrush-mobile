@@ -9,6 +9,8 @@ export const shadows = {
   lg: '0px 12px 32px rgba(60, 40, 20, 0.14)',
   cover: '0px 8px 20px rgba(40, 25, 10, 0.22)',
   bar: '0px -4px 20px rgba(60, 40, 20, 0.07)',
+  /** Warm glow under the moving delivery rider. */
+  riderGlow: '0px 4px 12px rgba(217, 119, 50, 0.45)',
 } as const;
 
 export type ShadowToken = keyof typeof shadows;
