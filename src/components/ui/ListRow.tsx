@@ -43,8 +43,11 @@ export function ListRow({
           </Text>
         ) : null}
       </View>
+      {/* A chevron implies navigation, so destructive actions (log out) go without one. */}
       {trailing ??
-        (onPress ? <Icon name="chevron-forward" size={18} color="textTertiary" /> : null)}
+        (onPress && !destructive ? (
+          <Icon name="chevron-forward" size={18} color="textTertiary" />
+        ) : null)}
     </>
   );
 
