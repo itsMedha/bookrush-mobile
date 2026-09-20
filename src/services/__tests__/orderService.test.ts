@@ -12,7 +12,7 @@ const book = (id: string): Book => {
 const address = seedAddresses[0];
 if (!address) throw new Error('missing address fixture');
 
-const items: CartItem[] = [{ book: book('atomic-habits'), quantity: 1 }];
+const items: CartItem[] = [{ book: book('atomic-habits'), quantity: 1, mode: 'buy' }];
 
 describe('orderService', () => {
   beforeEach(async () => {
@@ -29,7 +29,7 @@ describe('orderService', () => {
     const order = await orderService.createOrder({
       items,
       address,
-      deliveryMethod: 'express',
+      deliveryMethod: 'instant',
       paymentMethod: 'upi',
     });
 
@@ -45,7 +45,7 @@ describe('orderService', () => {
       orderService.createOrder({
         items: [],
         address,
-        deliveryMethod: 'express',
+        deliveryMethod: 'instant',
         paymentMethod: 'cod',
       }),
     ).rejects.toThrow('Your cart is empty.');
@@ -55,7 +55,7 @@ describe('orderService', () => {
     const created = await orderService.createOrder({
       items,
       address,
-      deliveryMethod: 'express',
+      deliveryMethod: 'instant',
       paymentMethod: 'card',
     });
 

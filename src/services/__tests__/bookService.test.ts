@@ -8,16 +8,18 @@ describe('filterBooks', () => {
   });
 
   it('filters by genre and express delivery', () => {
-    const results = filterBooks({ genre: 'Fantasy', expressOnly: true });
+    const results = filterBooks({ genre: 'Fantasy', instantOnly: true });
     expect(results.length).toBeGreaterThan(0);
-    expect(results.every((book) => book.genre === 'Fantasy' && book.expressDelivery)).toBe(true);
-    // Dune is Fantasy but standard-only.
+    expect(
+      results.every((book) => book.genre === 'Fantasy' && book.delivery.type === 'INSTANT'),
+    ).toBe(true);
+    // Dune is Fantasy but not stocked nearby.
     expect(results.some((book) => book.id === 'dune')).toBe(false);
   });
 
   it('sorts by price ascending and applies a rating floor', () => {
     const cheap = filterBooks({ sort: 'price-asc' });
-    expect(cheap[0]?.price).toBeLessThanOrEqual(cheap[1]?.price ?? Infinity);
+    expect(cheap[0]?.purchasePrice).toBeLessThanOrEqual(cheap[1]?.purchasePrice ?? Infinity);
 
     const top = filterBooks({ minRating: 4.7 });
     expect(top.every((book) => book.rating >= 4.7)).toBe(true);

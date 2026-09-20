@@ -29,7 +29,7 @@ describe('cartStore', () => {
 
   it('derives count, subtotal and per-book quantity via selectors', () => {
     const { add } = useCartStore.getState();
-    add(book('atomic-habits'), 2);
+    add(book('atomic-habits'), 'buy', 2);
     add(book('ikigai'));
 
     const state = useCartStore.getState();
@@ -54,7 +54,7 @@ describe('cartStore', () => {
     expect(selectQuantityOf('atomic-habits')(useCartStore.getState())).toBe(MAX_QUANTITY_PER_BOOK);
 
     // Zero to One only has 3 copies left.
-    add(book('zero-to-one'), 8);
+    add(book('zero-to-one'), 'buy', 8);
     expect(selectQuantityOf('zero-to-one')(useCartStore.getState())).toBe(3);
   });
 

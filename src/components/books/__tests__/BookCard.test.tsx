@@ -3,7 +3,7 @@ import { booksById } from '@/data/books';
 import { mockRouter } from '@/test/routerMock';
 import type { Book } from '@/types';
 import { BookCard } from '../BookCard';
-import { DeliveryBadge } from '../DeliveryBadge';
+import { DeliveryAvailability } from '../DeliveryAvailability';
 
 const book = (id: string): Book => {
   const found = booksById.get(id);
@@ -14,13 +14,14 @@ const book = (id: string): Book => {
 describe('BookCard', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('shows title, author, rating and price', async () => {
+  it('shows title, author, rating, price and delivery speed', async () => {
     await render(<BookCard book={book('atomic-habits')} />);
 
     expect(screen.getByText('Atomic Habits')).toBeOnTheScreen();
     expect(screen.getByText('James Clear')).toBeOnTheScreen();
     expect(screen.getByText('₹399')).toBeOnTheScreen();
     expect(screen.getByText('4.8')).toBeOnTheScreen();
+    expect(screen.getByText('32 min')).toBeOnTheScreen();
   });
 
   it('opens the book detail route on press', async () => {
@@ -32,15 +33,20 @@ describe('BookCard', () => {
   });
 });
 
-describe('DeliveryBadge', () => {
-  it('leads with speed, then free delivery, then availability', async () => {
-    const { rerender } = await render(<DeliveryBadge book={book('atomic-habits')} />);
-    expect(screen.getByText('30 min delivery')).toBeOnTheScreen();
+describe('DeliveryAvailability', () => {
+  it('renders the per-title ETA for instant books', async () => {
+    await render(<DeliveryAvailability delivery={book('atomic-habits').delivery} />);
+    expect(screen.getByText('32 min')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Instant delivery in 32 min')).toBeOnTheScreen();
+  });
 
-    await rerender(<DeliveryBadge book={book('dune')} />);
-    expect(screen.getByText('Free delivery')).toBeOnTheScreen();
+  it('falls back to a shipping window when no nearby store has it', async () => {
+    await render(<DeliveryAvailability delivery={book('dune').delivery} />);
+    expect(screen.getByText('2–4 days')).toBeOnTheScreen();
+  });
 
-    await rerender(<DeliveryBadge book={book('cosmos')} />);
-    expect(screen.getByText('Out of stock')).toBeOnTheScreen();
+  it('marks out-of-stock titles unavailable', async () => {
+    await render(<DeliveryAvailability delivery={book('cosmos').delivery} />);
+    expect(screen.getByText('Unavailable')).toBeOnTheScreen();
   });
 });

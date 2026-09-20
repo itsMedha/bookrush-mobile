@@ -23,14 +23,14 @@ export const routes = {
     focus?: boolean;
     genre?: string;
     sort?: string;
-    express?: boolean;
+    instant?: boolean;
     q?: string;
   }) => {
     const search = new URLSearchParams();
     if (params.focus) search.set('focus', '1');
     if (params.genre) search.set('genre', params.genre);
     if (params.sort) search.set('sort', params.sort);
-    if (params.express) search.set('express', '1');
+    if (params.instant) search.set('instant', '1');
     if (params.q) search.set('q', params.q);
     const query = search.toString();
     return query ? `/discover?${query}` : '/discover';
