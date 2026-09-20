@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { BookCover } from '@/components/books/BookCover';
+import { DeliveryAvailability } from '@/components/books/DeliveryAvailability';
 import { Icon } from '@/components/ui/Icon';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Rating } from '@/components/ui/Rating';
@@ -23,7 +24,7 @@ export function BookReference({ book }: { book: Book }) {
       scaleTo={0.985}
       style={styles.card}
     >
-      <BookCover book={book} width={44} />
+      <BookCover book={book} width={48} />
       <View style={styles.details}>
         <Text variant="bookTitle" numberOfLines={1}>
           {book.title}
@@ -32,13 +33,19 @@ export function BookReference({ book }: { book: Book }) {
           {book.author}
         </Text>
         <View style={styles.meta}>
-          <Rating value={book.rating} compact />
-          <Text variant="caption" color="textSecondary">
-            · {formatPrice(book.price)}
+          <Text variant="bodySmall" weight="700">
+            {formatPrice(book.purchasePrice)}
           </Text>
+          <Rating value={book.rating} compact />
         </View>
+        <DeliveryAvailability delivery={book.delivery} />
       </View>
-      <Icon name="chevron-forward" size={18} color="textTertiary" />
+      <View style={styles.cta}>
+        <Text variant="caption" weight="700" color="accentText">
+          View
+        </Text>
+        <Icon name="chevron-forward" size={14} color="accentText" />
+      </View>
     </PressableScale>
   );
 }
@@ -52,6 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: colors.surfaceMuted,
   },
-  details: { flex: 1, gap: 2 },
+  details: { flex: 1, gap: spacing.xs },
+  cta: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 });

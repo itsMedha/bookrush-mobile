@@ -58,7 +58,7 @@ export default function OrderTrackingScreen() {
 
   const data = order.data;
   const delivered = data.status === 'DELIVERED';
-  const express = data.deliveryMethod === 'express';
+  const instant = data.deliveryMethod === 'instant';
 
   return (
     <Screen edges={['top']}>
@@ -88,7 +88,7 @@ export default function OrderTrackingScreen() {
           <OrderTimeline order={data} />
         </Card>
 
-        {express ? data.rider ? <RiderCard rider={data.rider} /> : <RiderPlaceholder /> : null}
+        {instant ? data.rider ? <RiderCard rider={data.rider} /> : <RiderPlaceholder /> : null}
 
         <Card padding="lg" style={styles.card}>
           <Text variant="heading3">Your books</Text>

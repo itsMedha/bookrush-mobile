@@ -1,54 +1,62 @@
 import { StyleSheet, View } from 'react-native';
+import { deliveryHeadline } from '@/components/books/DeliveryAvailability';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { selectSelectedAddress, useUserStore } from '@/stores/userStore';
 import { colors, radius, spacing } from '@/theme';
 import type { Book } from '@/types';
+import { formatPrice } from '@/utils/format';
 import {
   availabilityOf,
-  EXPRESS_DELIVERY_FEE,
-  EXPRESS_ETA_LABEL,
-  FREE_EXPRESS_THRESHOLD,
-  STANDARD_ETA_LABEL,
+  FREE_INSTANT_THRESHOLD,
+  INSTANT_DELIVERY_FEE,
+  isInstant,
 } from '@/utils/pricing';
-import { formatPrice } from '@/utils/format';
 
-/** Where and how fast this book can reach the reader, plus availability. */
+/** How fast this book can reach the reader, and where it would go. */
 export function DeliveryInfoCard({ book }: { book: Book }) {
   const address = useUserStore(selectSelectedAddress);
   const availability = availabilityOf(book);
-  const express = book.expressDelivery && availability !== 'out-of-stock';
+  const instant = isInstant(book);
+  const unavailable = availability === 'out-of-stock';
+
+  const subtitle = unavailable
+    ? 'We will restock this title soon.'
+    : instant
+      ? `${formatPrice(INSTANT_DELIVERY_FEE)} — free over ${formatPrice(FREE_INSTANT_THRESHOLD)}`
+      : 'Free standard delivery';
 
   return (
     <Card padding="lg" style={styles.card} testID="delivery-info">
       <View style={styles.row}>
-        <View style={[styles.icon, express ? styles.iconExpress : styles.iconStandard]}>
+        <View
+          style={[
+            styles.icon,
+            unavailable
+              ? styles.iconUnavailable
+              : instant
+                ? styles.iconInstant
+                : styles.iconStandard,
+          ]}
+        >
           <Icon
-            name={express ? 'flash' : 'car-outline'}
+            name={unavailable ? 'close-circle' : instant ? 'flash' : 'cube-outline'}
             size={20}
-            color={express ? 'accentText' : 'sageText'}
+            color={unavailable ? 'danger' : instant ? 'accentText' : 'sageText'}
           />
         </View>
         <View style={styles.text}>
-          <Text variant="heading3">
-            {availability === 'out-of-stock'
-              ? 'Currently unavailable'
-              : express
-                ? `Delivery in ${EXPRESS_ETA_LABEL}`
-                : `Delivery in ${STANDARD_ETA_LABEL}`}
+          <Text variant="heading3" testID="delivery-headline">
+            {deliveryHeadline(book.delivery)}
           </Text>
           <Text variant="bodySmall" color="textSecondary">
-            {availability === 'out-of-stock'
-              ? 'We will restock this title soon.'
-              : express
-                ? `${formatPrice(EXPRESS_DELIVERY_FEE)} — free above ${formatPrice(FREE_EXPRESS_THRESHOLD)}`
-                : 'Free standard delivery'}
+            {subtitle}
           </Text>
         </View>
       </View>
 
-      {address ? (
+      {address && !unavailable ? (
         <View style={styles.row}>
           <View style={styles.pin}>
             <Icon name="location-outline" size={18} color="textSecondary" />
@@ -63,41 +71,16 @@ export function DeliveryInfoCard({ book }: { book: Book }) {
         </View>
       ) : null}
 
-      <View style={styles.row}>
-        <View style={styles.pin}>
-          <Icon
-            name={
-              availability === 'out-of-stock' ? 'close-circle-outline' : 'checkmark-circle-outline'
-            }
-            size={18}
-            color={
-              availability === 'out-of-stock'
-                ? 'danger'
-                : availability === 'low-stock'
-                  ? 'accentText'
-                  : 'success'
-            }
-          />
+      {availability === 'low-stock' ? (
+        <View style={styles.row}>
+          <View style={styles.pin}>
+            <Icon name="alert-circle-outline" size={18} color="accentText" />
+          </View>
+          <Text variant="bodySmall" weight="700" color="accentText" testID="availability">
+            Only {book.stock} left nearby
+          </Text>
         </View>
-        <Text
-          testID="availability"
-          variant="bodySmall"
-          weight="700"
-          color={
-            availability === 'out-of-stock'
-              ? 'danger'
-              : availability === 'low-stock'
-                ? 'accentText'
-                : 'success'
-          }
-        >
-          {availability === 'out-of-stock'
-            ? 'Out of stock'
-            : availability === 'low-stock'
-              ? `Only ${book.stock} left in stock`
-              : 'In stock'}
-        </Text>
-      </View>
+      ) : null}
     </Card>
   );
 }
@@ -113,7 +96,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconExpress: { backgroundColor: colors.accentSoft },
+  iconInstant: { backgroundColor: colors.accentSoft },
   iconStandard: { backgroundColor: colors.sageSoft },
+  iconUnavailable: { backgroundColor: colors.dangerSoft },
   pin: { width: 40, alignItems: 'center' },
 });

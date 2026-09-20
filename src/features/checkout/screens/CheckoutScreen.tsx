@@ -23,10 +23,11 @@ import { layout, spacing } from '@/theme';
 import type { DeliveryMethod, PaymentMethodId } from '@/types';
 import { formatPrice, pluralize } from '@/utils/format';
 import {
-  canDeliverExpress,
+  canDeliverInstant,
   computePricing,
   deliveryFee,
-  EXPRESS_ETA_LABEL,
+  instantEtaRange,
+  splitByDelivery,
   STANDARD_ETA_LABEL,
 } from '@/utils/pricing';
 import { routes } from '@/utils/routes';
@@ -69,15 +70,17 @@ export default function CheckoutScreen() {
   const setPaymentMethod = useUserStore((state) => state.setPaymentMethod);
   const createOrder = useCreateOrder();
 
-  const [requestedMethod, setRequestedMethod] = useState<DeliveryMethod>('express');
+  const [requestedMethod, setRequestedMethod] = useState<DeliveryMethod>('instant');
   const [addressOpen, setAddressOpen] = useState(false);
   const [placed, setPlaced] = useState(false);
 
-  const expressAvailable = canDeliverExpress(items);
-  const deliveryMethod: DeliveryMethod = expressAvailable ? requestedMethod : 'standard';
+  const instantAvailable = canDeliverInstant(items);
+  const deliveryMethod: DeliveryMethod = instantAvailable ? requestedMethod : 'standard';
+  const { instant: instantItems, standard: standardItems } = splitByDelivery(items);
+  const eta = instantEtaRange(instantItems);
   const pricing = useMemo(() => computePricing(items, deliveryMethod), [items, deliveryMethod]);
   const payable = pricing.itemsTotal - pricing.discount;
-  const expressFee = deliveryFee('express', payable);
+  const instantFee = deliveryFee('instant', payable);
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
 
   // An empty basket has nothing to check out — unless we just emptied it by placing the order.
@@ -151,20 +154,22 @@ export default function CheckoutScreen() {
           <Section title="Delivery option">
             <View style={styles.options}>
               <OptionCard
-                testID="delivery-express"
+                testID="delivery-instant"
                 icon="flash"
-                title="Express"
+                title="Instant"
                 subtitle={
-                  expressAvailable ? EXPRESS_ETA_LABEL : 'Not available for every book in your cart'
+                  instantAvailable && eta
+                    ? `Arrives in ${eta.min}–${eta.max} min`
+                    : `${standardItems.length} of ${items.length} items are not stocked nearby`
                 }
                 trailing={
                   <Text variant="body" weight="700">
-                    {expressFee === 0 ? 'Free' : formatPrice(expressFee)}
+                    {instantFee === 0 ? 'Free' : formatPrice(instantFee)}
                   </Text>
                 }
-                selected={deliveryMethod === 'express'}
-                disabled={!expressAvailable}
-                onPress={() => setRequestedMethod('express')}
+                selected={deliveryMethod === 'instant'}
+                disabled={!instantAvailable}
+                onPress={() => setRequestedMethod('instant')}
               />
               <OptionCard
                 testID="delivery-standard"

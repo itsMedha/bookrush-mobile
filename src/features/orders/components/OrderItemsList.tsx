@@ -21,10 +21,11 @@ export function OrderItemsList({ items }: { items: OrderItem[] }) {
               </Text>
               <Text variant="caption" color="textSecondary" numberOfLines={1}>
                 {item.author} · Qty {item.quantity}
+                {item.mode === 'rent' ? ` · Rented ${item.rentalDays ?? 30} days` : ''}
               </Text>
             </View>
             <Text variant="bodySmall" weight="700">
-              {formatPrice(item.price * item.quantity)}
+              {formatPrice(item.unitPrice * item.quantity)}
             </Text>
           </View>
         </View>

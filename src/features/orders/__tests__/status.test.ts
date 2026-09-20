@@ -5,7 +5,7 @@ const baseOrder = {
   id: 'o1',
   number: 'BR1',
   items: [],
-  deliveryMethod: 'express',
+  deliveryMethod: 'instant',
   timeline: {},
   etaMinutes: 24,
   estimatedDelivery: 'Arriving today',

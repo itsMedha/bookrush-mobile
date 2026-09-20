@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Divider } from '@/components/ui/Divider';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Icon } from '@/components/ui/Icon';
 import { Screen } from '@/components/ui/Screen';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { StickyBar } from '@/components/ui/StickyBar';
@@ -15,10 +16,55 @@ import { toast } from '@/stores/toastStore';
 import { layout, spacing } from '@/theme';
 import type { CartItem } from '@/types';
 import { formatPrice, pluralize } from '@/utils/format';
-import { canDeliverExpress, computePricing } from '@/utils/pricing';
+import {
+  canDeliverInstant,
+  computePricing,
+  instantEtaRange,
+  splitByDelivery,
+} from '@/utils/pricing';
 import { routes } from '@/utils/routes';
 import { CartDeliveryCard } from '../components/CartDeliveryCard';
 import { CartItemRow } from '../components/CartItemRow';
+
+interface CartGroupProps {
+  title: string;
+  caption: string;
+  instant: boolean;
+  items: CartItem[];
+  onQuantityChange: (bookId: string, quantity: number) => void;
+  onRemove: (item: CartItem) => void;
+  onModeChange: React.ComponentProps<typeof CartItemRow>['onModeChange'];
+  onOpen: (id: string) => void;
+}
+
+/** A fulfilment group. Mixed baskets render one of these per delivery speed. */
+function CartGroup({ title, caption, instant, items, ...handlers }: CartGroupProps) {
+  return (
+    <View style={styles.group}>
+      <View style={styles.groupHeader}>
+        <Icon
+          name={instant ? 'flash' : 'cube-outline'}
+          size={14}
+          color={instant ? 'accentText' : 'sageText'}
+        />
+        <Text variant="overline" color={instant ? 'accentText' : 'sageText'}>
+          {title}
+        </Text>
+        <Text variant="caption" color="textSecondary">
+          · {caption}
+        </Text>
+      </View>
+      <Card padding="none" style={styles.list}>
+        {items.map((item, index) => (
+          <View key={item.book.id}>
+            {index > 0 ? <Divider /> : null}
+            <CartItemRow item={item} {...handlers} />
+          </View>
+        ))}
+      </Card>
+    </View>
+  );
+}
 
 export default function CartScreen() {
   const router = useRouter();
@@ -26,19 +72,22 @@ export default function CartScreen() {
   const add = useCartStore((state) => state.add);
   const remove = useCartStore((state) => state.remove);
   const setQuantity = useCartStore((state) => state.setQuantity);
+  const setMode = useCartStore((state) => state.setMode);
 
-  const expressAvailable = canDeliverExpress(items);
+  const instantAvailable = canDeliverInstant(items);
   const pricing = useMemo(
-    () => computePricing(items, expressAvailable ? 'express' : 'standard'),
-    [items, expressAvailable],
+    () => computePricing(items, instantAvailable ? 'instant' : 'standard'),
+    [items, instantAvailable],
   );
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
+  const { instant, standard } = splitByDelivery(items);
+  const eta = instantEtaRange(instant);
 
   const removeWithUndo = useCallback(
     (item: CartItem) => {
       remove(item.book.id);
       toast.show(`Removed “${item.book.title}”`, {
-        action: { label: 'Undo', onPress: () => add(item.book, item.quantity) },
+        action: { label: 'Undo', onPress: () => add(item.book, item.mode, item.quantity) },
       });
     },
     [remove, add],
@@ -64,6 +113,13 @@ export default function CartScreen() {
     );
   }
 
+  const handlers = {
+    onQuantityChange: setQuantity,
+    onRemove: removeWithUndo,
+    onModeChange: setMode,
+    onOpen: openBook,
+  };
+
   return (
     <Screen edges={['top']}>
       <ScreenHeader title="Your cart" subtitle={pluralize(count, 'item')} />
@@ -72,24 +128,27 @@ export default function CartScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-        <Card padding="none" style={styles.list}>
-          {items.map((item, index) => (
-            <View key={item.book.id}>
-              {index > 0 ? <Divider /> : null}
-              <CartItemRow
-                item={item}
-                onQuantityChange={setQuantity}
-                onRemove={removeWithUndo}
-                onOpen={openBook}
-              />
-            </View>
-          ))}
-        </Card>
+        {instant.length > 0 ? (
+          <CartGroup
+            title="Instant delivery"
+            caption={eta ? `arriving in ${eta.min}–${eta.max} min` : 'from a store near you'}
+            instant
+            items={instant}
+            {...handlers}
+          />
+        ) : null}
 
-        <CartDeliveryCard
-          expressAvailable={expressAvailable}
-          payableTotal={pricing.itemsTotal - pricing.discount}
-        />
+        {standard.length > 0 ? (
+          <CartGroup
+            title="Standard delivery"
+            caption="arriving in 2–4 days"
+            instant={false}
+            items={standard}
+            {...handlers}
+          />
+        ) : null}
+
+        <CartDeliveryCard items={items} payableTotal={pricing.itemsTotal - pricing.discount} />
         <OrderSummary pricing={pricing} />
       </ScrollView>
 
@@ -123,6 +182,8 @@ const styles = StyleSheet.create({
     maxWidth: layout.maxContentWidth,
     alignSelf: 'center',
   },
+  group: { gap: spacing.sm },
+  groupHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   list: { overflow: 'hidden' },
   empty: { flex: 1, justifyContent: 'center' },
   total: { minWidth: 88 },

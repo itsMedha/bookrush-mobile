@@ -11,7 +11,7 @@ import { PulsingDot } from './PulsingDot';
 /** The dark status panel at the top of tracking: current stage, ETA and the rider's route. */
 export function TrackingHero({ order }: { order: Order }) {
   const delivered = order.status === 'DELIVERED';
-  const express = order.deliveryMethod === 'express';
+  const instant = order.deliveryMethod === 'instant';
 
   return (
     <View style={[styles.hero, delivered ? styles.heroDelivered : null]} testID="tracking-hero">
@@ -26,7 +26,7 @@ export function TrackingHero({ order }: { order: Order }) {
             {delivered ? 'Completed' : 'Live tracking'}
           </Text>
         </View>
-        {!express && !delivered ? <Badge label="Standard shipping" tone="neutral" /> : null}
+        {!instant && !delivered ? <Badge label="Standard shipping" tone="neutral" /> : null}
       </View>
 
       <Text variant="heading1" color="textInverse" testID="tracking-status">

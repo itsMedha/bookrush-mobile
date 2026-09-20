@@ -37,8 +37,11 @@ describe('CartScreen', () => {
     expect(screen.getByText('Atomic Habits')).toBeOnTheScreen();
     expect(screen.getByText('Ikigai')).toBeOnTheScreen();
     expect(screen.getByText('2 items')).toBeOnTheScreen();
-    expect(screen.getByText('Delivery available')).toBeOnTheScreen();
-    // 399 + 299 + ₹49 express delivery
+    // Both the group header and the delivery summary name the speed.
+    expect(screen.getAllByText('Instant delivery').length).toBeGreaterThan(0);
+    // Slowest item is Atomic Habits at 32 min, plus a 10 min picking buffer.
+    expect(screen.getByText(/Arrives in 32–42 min/)).toBeOnTheScreen();
+    // 399 + 299 + ₹49 instant delivery
     expect(screen.getByTestId('cart-total')).toHaveTextContent('₹747');
   });
 
@@ -68,6 +71,30 @@ describe('CartScreen', () => {
       toast?.action?.onPress();
     });
     expect(useCartStore.getState().items).toHaveLength(1);
+  });
+
+  it('groups a mixed basket by fulfilment speed', async () => {
+    useCartStore.getState().add(book('atomic-habits')); // 32 min from a nearby store
+    useCartStore.getState().add(book('dune')); // ships standard
+    await renderWithProviders(<CartScreen />);
+
+    expect(screen.getByText('Instant delivery')).toBeOnTheScreen();
+    expect(screen.getByText('Standard delivery')).toBeOnTheScreen();
+    expect(screen.getByText('1 item arriving fast')).toBeOnTheScreen();
+    expect(screen.getByText('1 item shipping')).toBeOnTheScreen();
+  });
+
+  it('switches a line between buy and rent, updating the total', async () => {
+    useCartStore.getState().add(book('atomic-habits'));
+    const user = userEvent.setup();
+    await renderWithProviders(<CartScreen />);
+
+    expect(screen.getByTestId('cart-total')).toHaveTextContent('₹448'); // 399 + 49 delivery
+
+    await user.press(screen.getByTestId('switch-mode-atomic-habits'));
+
+    expect(useCartStore.getState().items[0]?.mode).toBe('rent');
+    expect(screen.getByTestId('cart-total')).toHaveTextContent('₹148'); // 99 + 49 delivery
   });
 
   it('goes to checkout', async () => {

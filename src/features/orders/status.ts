@@ -33,7 +33,7 @@ export function arrivalLabel(order: Order): string {
       ? `Delivered on ${formatShortDate(deliveredAt)}, ${formatTime(deliveredAt)}`
       : 'Delivered';
   }
-  return order.deliveryMethod === 'express'
+  return order.deliveryMethod === 'instant'
     ? `Arriving in ${order.etaMinutes} min`
     : order.estimatedDelivery;
 }

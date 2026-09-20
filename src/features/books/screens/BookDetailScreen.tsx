@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -27,8 +28,10 @@ import { AddToCartButton } from '@/features/cart/components/AddToCartButton';
 import { errorMessage } from '@/services/http';
 import { useCartStore } from '@/stores/cartStore';
 import { colors, layout, radius, spacing } from '@/theme';
+import type { AcquisitionMode } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { routes } from '@/utils/routes';
+import { AcquisitionPicker } from '../components/AcquisitionPicker';
 import { DeliveryInfoCard } from '../components/DeliveryInfoCard';
 import { DetailHeader } from '../components/DetailHeader';
 import { ExpandableText } from '../components/ExpandableText';
@@ -51,6 +54,7 @@ function DetailSkeleton() {
 
 export default function BookDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [mode, setMode] = useState<AcquisitionMode>('buy');
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -104,11 +108,12 @@ export default function BookDetailScreen() {
 
   const data = book.data;
   const coverWidth = Math.min(width * 0.5, 210);
-  const outOfStock = data.stock <= 0;
+  const outOfStock = data.delivery.type === 'UNAVAILABLE';
+  const activePrice = mode === 'rent' && data.rental ? data.rental.price : data.purchasePrice;
 
   const buyNow = () => {
     // Buy Now ensures the book is in the basket and jumps straight to checkout.
-    if (!useCartStore.getState().items.some((item) => item.book.id === data.id)) add(data);
+    if (!useCartStore.getState().items.some((item) => item.book.id === data.id)) add(data, mode);
     router.push(routes.checkout);
   };
 
@@ -153,21 +158,34 @@ export default function BookDetailScreen() {
             </View>
           </View>
 
+          <View style={styles.priceBlock}>
+            {mode === 'rent' && data.rental ? (
+              <>
+                <Price price={data.rental.price} size="lg" />
+                <Text variant="caption" color="textSecondary">
+                  Rental for {data.rental.durationDays} days · free return pickup
+                </Text>
+              </>
+            ) : (
+              <>
+                <Price price={data.purchasePrice} mrp={data.mrp} size="lg" showDiscount />
+                <Text variant="caption" color="textSecondary">
+                  Inclusive of all taxes
+                </Text>
+              </>
+            )}
+          </View>
+
+          <AcquisitionPicker book={data} value={mode} onChange={setMode} />
+
+          <DeliveryInfoCard book={data} />
+
           <View style={styles.chips}>
             <Badge label={data.genre} tone="ink" />
             <Badge label={`${data.pages} pages`} />
             <Badge label={data.language} />
             <Badge label={String(data.publishedYear)} />
           </View>
-
-          <View style={styles.priceBlock}>
-            <Price price={data.price} mrp={data.mrp} size="lg" showDiscount />
-            <Text variant="caption" color="textSecondary">
-              Inclusive of all taxes
-            </Text>
-          </View>
-
-          <DeliveryInfoCard book={data} />
 
           <View style={styles.section}>
             <SectionHeader title="About this book" inset={0} />
@@ -188,15 +206,20 @@ export default function BookDetailScreen() {
       <StickyBar>
         <View style={styles.barPrice}>
           <Text variant="caption" color="textSecondary">
-            Price
+            {mode === 'rent' ? 'Rent' : 'Buy'}
           </Text>
           <Text variant="heading3" testID="bar-price">
-            {formatPrice(data.price)}
+            {formatPrice(activePrice)}
           </Text>
         </View>
-        <AddToCartButton book={data} />
+        <AddToCartButton book={data} mode={mode} />
         {!outOfStock ? (
-          <Button testID="buy-now" label="Buy Now" onPress={buyNow} style={styles.buyNow} />
+          <Button
+            testID="buy-now"
+            label={mode === 'rent' ? 'Rent Now' : 'Buy Now'}
+            onPress={buyNow}
+            style={styles.buyNow}
+          />
         ) : null}
       </StickyBar>
     </View>

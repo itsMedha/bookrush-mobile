@@ -17,7 +17,7 @@ import { Text } from '@/components/ui/Text';
 import { useCartStore } from '@/stores/cartStore';
 import { toast } from '@/stores/toastStore';
 import { colors, duration, radius, spacing, spring } from '@/theme';
-import type { Book } from '@/types';
+import type { AcquisitionMode, Book } from '@/types';
 import { haptics } from '@/utils/haptics';
 import { routes } from '@/utils/routes';
 
@@ -25,17 +25,18 @@ const CONFIRMATION_MS = 1600;
 
 interface AddToCartButtonProps {
   book: Book;
+  mode?: AcquisitionMode;
 }
 
 /** Add to Cart → springs, tints sage and reads "Added ✓", then settles back. */
-export function AddToCartButton({ book }: AddToCartButtonProps) {
+export function AddToCartButton({ book, mode = 'buy' }: AddToCartButtonProps) {
   const router = useRouter();
   const add = useCartStore((state) => state.add);
   const [added, setAdded] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const progress = useSharedValue(0);
   const pop = useSharedValue(1);
-  const outOfStock = book.stock <= 0;
+  const outOfStock = book.delivery.type === 'UNAVAILABLE';
 
   useEffect(() => {
     progress.value = withTiming(added ? 1 : 0, { duration: duration.base });
@@ -55,11 +56,11 @@ export function AddToCartButton({ book }: AddToCartButtonProps) {
   }));
 
   const onPress = () => {
-    add(book);
+    add(book, mode);
     haptics.success();
     pop.value = withSequence(withTiming(1.05, { duration: 100 }), withSpring(1, spring.bouncy));
     setAdded(true);
-    toast.success('Added to your cart', {
+    toast.success(mode === 'rent' ? 'Added to cart — rental' : 'Added to your cart', {
       label: 'View cart',
       onPress: () => router.push(routes.cart),
     });

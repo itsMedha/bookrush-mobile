@@ -62,7 +62,7 @@ export default function ConfirmationScreen() {
   }
 
   const data = order.data;
-  const express = data.deliveryMethod === 'express';
+  const instant = data.deliveryMethod === 'instant';
 
   // Leave the checkout stack behind so Back from tracking lands on a tab, not an empty cart.
   const goTo = (path: string) => {
@@ -95,7 +95,7 @@ export default function ConfirmationScreen() {
               <Detail label="Order number" value={`#${data.number}`} testID="order-number" />
               <Detail
                 label="Estimated delivery"
-                value={express ? `In ${data.etaMinutes} min` : data.estimatedDelivery}
+                value={instant ? `In ${data.etaMinutes} min` : data.estimatedDelivery}
               />
             </View>
             <Divider />

@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { Card } from '@/components/ui/Card';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -9,7 +10,12 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
+import { booksById } from '@/data/books';
 import { useRefresh } from '@/hooks/useRefresh';
+import { useCartStore } from '@/stores/cartStore';
+import { toast } from '@/stores/toastStore';
+import type { Order } from '@/types';
+import { pluralize } from '@/utils/format';
 import { errorMessage } from '@/services/http';
 import { colors, layout, spacing } from '@/theme';
 import { routes } from '@/utils/routes';
@@ -32,6 +38,30 @@ function OrdersSkeleton() {
 
 export default function OrdersScreen() {
   const router = useRouter();
+  const addToCart = useCartStore((state) => state.add);
+
+  // Reordering drops the previous lines back into the cart at today's price and
+  // availability, then hands over to the normal checkout flow.
+  const buyAgain = useCallback(
+    (order: Order) => {
+      const restored = order.items.flatMap((item) => {
+        const book = booksById.get(item.bookId);
+        return book && book.delivery.type !== 'UNAVAILABLE' ? [{ book, item }] : [];
+      });
+
+      if (restored.length === 0) {
+        toast.error('These titles are out of stock right now');
+        return;
+      }
+
+      restored.forEach(({ book, item }) => addToCart(book, item.mode, item.quantity));
+      toast.success(`${pluralize(restored.length, 'item')} back in your cart`, {
+        label: 'View cart',
+        onPress: () => router.push(routes.cart),
+      });
+    },
+    [addToCart, router],
+  );
   const orders = useOrders({ poll: true });
   const { refreshing, onRefresh } = useRefresh(REFRESH_ROOTS);
 
@@ -81,7 +111,7 @@ export default function OrdersScreen() {
           <View style={styles.previous}>
             <SectionHeader title="Previous orders" inset={0} />
             {previous.map((order) => (
-              <OrderRow key={order.id} order={order} />
+              <OrderRow key={order.id} order={order} onBuyAgain={() => buyAgain(order)} />
             ))}
           </View>
         ) : null}
