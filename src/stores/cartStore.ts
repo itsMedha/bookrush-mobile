@@ -1,14 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Book, CartItem } from '@/types';
+import type { AcquisitionMode, Book, CartItem } from '@/types';
+import { lineTotal } from '@/utils/pricing';
 import { persistStorage, STORE_KEYS } from './persist';
 
 export const MAX_QUANTITY_PER_BOOK = 10;
 
 interface CartState {
   items: CartItem[];
-  add: (book: Book, quantity?: number) => void;
+  add: (book: Book, mode?: AcquisitionMode, quantity?: number) => void;
   setQuantity: (bookId: string, quantity: number) => void;
+  setMode: (bookId: string, mode: AcquisitionMode) => void;
   remove: (bookId: string) => void;
   clear: () => void;
 }
@@ -20,16 +22,27 @@ export const useCartStore = create<CartState>()(
     (set) => ({
       items: [],
 
-      add: (book, quantity = 1) =>
+      // A book occupies one line. Adding it again as a rental switches that line over
+      // instead of splitting into two, which is what people expect from a cart.
+      add: (book, mode = 'buy', quantity = 1) =>
         set(({ items }) => {
           const existing = items.find((item) => item.book.id === book.id);
           if (!existing) {
-            return { items: [...items, { book, quantity: Math.min(quantity, limitFor(book)) }] };
+            return {
+              items: [...items, { book, mode, quantity: Math.min(quantity, limitFor(book)) }],
+            };
           }
           return {
             items: items.map((item) =>
               item.book.id === book.id
-                ? { ...item, quantity: Math.min(item.quantity + quantity, limitFor(book)) }
+                ? {
+                    ...item,
+                    mode,
+                    quantity:
+                      item.mode === mode
+                        ? Math.min(item.quantity + quantity, limitFor(book))
+                        : item.quantity,
+                  }
                 : item,
             ),
           };
@@ -46,6 +59,11 @@ export const useCartStore = create<CartState>()(
             .filter((item) => item.quantity > 0),
         })),
 
+      setMode: (bookId, mode) =>
+        set(({ items }) => ({
+          items: items.map((item) => (item.book.id === bookId ? { ...item, mode } : item)),
+        })),
+
       remove: (bookId) =>
         set(({ items }) => ({ items: items.filter((item) => item.book.id !== bookId) })),
 
@@ -60,7 +78,12 @@ export const selectCartCount = (state: { items: CartItem[] }) =>
   state.items.reduce((sum, item) => sum + item.quantity, 0);
 
 export const selectCartSubtotal = (state: { items: CartItem[] }) =>
-  state.items.reduce((sum, item) => sum + item.book.price * item.quantity, 0);
+  state.items.reduce((sum, item) => sum + lineTotal(item), 0);
+
+export const selectCartLine =
+  (bookId: string) =>
+  (state: { items: CartItem[] }): CartItem | undefined =>
+    state.items.find((item) => item.book.id === bookId);
 
 export const selectQuantityOf = (bookId: string) => (state: { items: CartItem[] }) =>
-  state.items.find((item) => item.book.id === bookId)?.quantity ?? 0;
+  selectCartLine(bookId)(state)?.quantity ?? 0;

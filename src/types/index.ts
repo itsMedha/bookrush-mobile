@@ -11,6 +11,25 @@ export const GENRES = [
 
 export type Genre = (typeof GENRES)[number];
 
+/**
+ * How fast a book can reach the reader right now. `INSTANT` means a nearby fulfilment
+ * point has a copy on the shelf, so the ETA varies per title depending on which store
+ * holds it.
+ */
+export type DeliveryOption =
+  | { type: 'INSTANT'; etaMinutes: number }
+  | { type: 'STANDARD'; etaText: string }
+  | { type: 'UNAVAILABLE' };
+
+/** A book can be bought outright or borrowed for a fixed window. */
+export type AcquisitionMode = 'buy' | 'rent';
+
+export interface Rental {
+  /** Fee in INR for the whole window. */
+  price: number;
+  durationDays: number;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -19,10 +38,13 @@ export interface Book {
   coverUrl: string;
   coverColor: string;
   genre: Genre;
-  /** Selling price in INR. */
-  price: number;
-  /** Maximum retail price in INR. */
+  /** Price to own the book, in INR. */
+  purchasePrice: number;
+  /** Maximum retail price in INR, shown struck through against `purchasePrice`. */
   mrp: number;
+  /** Absent when a title is not offered for rent. */
+  rental?: Rental;
+  delivery: DeliveryOption;
   rating: number;
   ratingCount: number;
   pages: number;
@@ -30,8 +52,6 @@ export interface Book {
   language: string;
   description: string;
   stock: number;
-  /** Whether the book can be fulfilled through 30–60 minute express delivery. */
-  expressDelivery: boolean;
 }
 
 export interface Review {
@@ -108,7 +128,7 @@ export const ORDER_STATUSES = [
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export type DeliveryMethod = 'express' | 'standard';
+export type DeliveryMethod = 'instant' | 'standard';
 export type PaymentMethodId = 'upi' | 'card' | 'cod';
 
 export interface Address {
@@ -126,8 +146,12 @@ export interface OrderItem {
   author: string;
   coverUrl: string;
   coverColor: string;
-  price: number;
+  /** What each unit cost at the time of ordering — purchase price or rental fee. */
+  unitPrice: number;
   quantity: number;
+  mode: AcquisitionMode;
+  /** Set for rented lines so history can show the window that was paid for. */
+  rentalDays?: number;
 }
 
 export interface Pricing {
@@ -156,7 +180,7 @@ export interface Order {
   placedAt: string;
   /** ISO timestamp per reached status. */
   timeline: Partial<Record<OrderStatus, string>>;
-  /** Minutes until arrival for express orders; 0 once delivered. */
+  /** Minutes until arrival for instant orders; 0 once delivered. */
   etaMinutes: number;
   /** Human readable delivery estimate, e.g. "Arrives by Wed, 23 Sep". */
   estimatedDelivery: string;
@@ -166,6 +190,7 @@ export interface Order {
 export interface CartItem {
   book: Book;
   quantity: number;
+  mode: AcquisitionMode;
 }
 
 export interface Session {
@@ -210,7 +235,7 @@ export interface SearchParams {
   query?: string;
   genre?: Genre;
   sort?: SortOption;
-  expressOnly?: boolean;
+  instantOnly?: boolean;
   minRating?: number;
 }
 

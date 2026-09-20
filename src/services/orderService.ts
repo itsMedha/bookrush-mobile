@@ -44,7 +44,7 @@ function stepForward(record: OrderRecord, at: number) {
 function tick(record: OrderRecord, now: number): boolean {
   if (!record.autoAdvance) return false;
   const limit =
-    record.deliveryMethod === 'express' ? ORDER_STATUSES.length - 1 : STANDARD_AUTO_LIMIT;
+    record.deliveryMethod === 'instant' ? ORDER_STATUSES.length - 1 : STANDARD_AUTO_LIMIT;
   let changed = false;
   while (statusIndex(record) < limit && now - record.stageChangedAt >= STAGE_DURATION_MS) {
     stepForward(record, record.stageChangedAt + STAGE_DURATION_MS);
@@ -64,17 +64,17 @@ function etaMinutes(record: OrderRecord, now: number): number {
 
 function toOrder(record: OrderRecord, now: number): Order {
   const { stageChangedAt: _stage, autoAdvance: _auto, standardEta, ...rest } = record;
-  const express = record.deliveryMethod === 'express';
+  const instant = record.deliveryMethod === 'instant';
   const delivered = record.status === 'DELIVERED';
   return {
     ...rest,
-    etaMinutes: express ? etaMinutes(record, now) : 0,
+    etaMinutes: instant ? etaMinutes(record, now) : 0,
     estimatedDelivery: delivered
       ? 'Delivered'
-      : express
+      : instant
         ? 'Arriving today'
         : `Arrives by ${formatWeekdayDate(new Date(standardEta))}`,
-    rider: express && statusIndex(record) >= 3 ? defaultRider : undefined,
+    rider: instant && statusIndex(record) >= 3 ? defaultRider : undefined,
   };
 }
 
@@ -124,14 +124,16 @@ export const orderService = {
           id: `order_${number.toLowerCase()}`,
           number,
           status: 'CONFIRMED',
-          items: input.items.map(({ book, quantity }) => ({
+          items: input.items.map(({ book, quantity, mode }) => ({
             bookId: book.id,
             title: book.title,
             author: book.author,
             coverUrl: book.coverUrl,
             coverColor: book.coverColor,
-            price: book.price,
+            unitPrice: mode === 'rent' && book.rental ? book.rental.price : book.purchasePrice,
             quantity,
+            mode,
+            rentalDays: mode === 'rent' ? book.rental?.durationDays : undefined,
           })),
           address: input.address,
           deliveryMethod: input.deliveryMethod,

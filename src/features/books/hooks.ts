@@ -9,6 +9,18 @@ export function useTrendingBooks() {
   return useQuery({ queryKey: queryKeys.books.trending, queryFn: bookService.getTrendingBooks });
 }
 
+export function useInstantBooks() {
+  return useQuery({ queryKey: queryKeys.books.instant, queryFn: bookService.getInstantBooks });
+}
+
+export function useBestSellers() {
+  return useQuery({ queryKey: queryKeys.books.bestSellers, queryFn: bookService.getBestSellers });
+}
+
+export function useDeals() {
+  return useQuery({ queryKey: queryKeys.books.deals, queryFn: bookService.getDeals });
+}
+
 export function useRecommendedBooks() {
   return useQuery({
     queryKey: queryKeys.books.recommended,

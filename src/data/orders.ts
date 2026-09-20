@@ -1,4 +1,11 @@
-import type { CartItem, DeliveryMethod, Order, OrderStatus, PaymentMethodId } from '@/types';
+import type {
+  AcquisitionMode,
+  CartItem,
+  DeliveryMethod,
+  Order,
+  OrderStatus,
+  PaymentMethodId,
+} from '@/types';
 import { ORDER_STATUSES } from '@/types';
 import { computePricing } from '@/utils/pricing';
 import { booksById } from './books';
@@ -21,16 +28,16 @@ export interface OrderRecord extends Omit<
 const MINUTE = 60_000;
 const DAY = 24 * 60 * MINUTE;
 
-const line = (bookId: string, quantity = 1): CartItem => {
+const line = (bookId: string, quantity = 1, mode: AcquisitionMode = 'buy'): CartItem => {
   const book = booksById.get(bookId);
   if (!book) throw new Error(`Unknown book in seed data: ${bookId}`);
-  return { book, quantity };
+  return { book, quantity, mode };
 };
 
 /** Minutes after `placedAt` at which each status was reached. */
-const EXPRESS_OFFSETS = [0, 3, 9, 15, 22, 31];
+const INSTANT_OFFSETS = [0, 3, 9, 15, 22, 31];
 
-function timelineFrom(placedAt: number, statusCount: number, offsets: number[] = EXPRESS_OFFSETS) {
+function timelineFrom(placedAt: number, statusCount: number, offsets: number[] = INSTANT_OFFSETS) {
   const timeline: Order['timeline'] = {};
   ORDER_STATUSES.slice(0, statusCount).forEach((status, index) => {
     timeline[status] = new Date(placedAt + (offsets[index] ?? 0) * MINUTE).toISOString();
@@ -51,7 +58,7 @@ interface SeedInput {
 function buildRecord(input: SeedInput): OrderRecord {
   const status = ORDER_STATUSES[input.statusIndex] ?? 'CONFIRMED';
   const offsets =
-    input.method === 'express' ? EXPRESS_OFFSETS : [0, 240, 1_200, 2_880, 3_400, 4_300];
+    input.method === 'instant' ? INSTANT_OFFSETS : [0, 240, 1_200, 2_880, 3_400, 4_300];
   const address = seedAddresses[0];
   if (!address) throw new Error('Seed addresses missing');
 
@@ -59,14 +66,16 @@ function buildRecord(input: SeedInput): OrderRecord {
     id: `order_${input.number.toLowerCase()}`,
     number: input.number,
     status,
-    items: input.lines.map(({ book, quantity }) => ({
+    items: input.lines.map(({ book, quantity, mode }) => ({
       bookId: book.id,
       title: book.title,
       author: book.author,
       coverUrl: book.coverUrl,
       coverColor: book.coverColor,
-      price: book.price,
+      unitPrice: mode === 'rent' && book.rental ? book.rental.price : book.purchasePrice,
       quantity,
+      mode,
+      rentalDays: mode === 'rent' ? book.rental?.durationDays : undefined,
     })),
     address,
     deliveryMethod: input.method,
@@ -86,7 +95,7 @@ export function createSeedOrders(now: number = Date.now()): OrderRecord[] {
     buildRecord({
       number: 'BR1024',
       lines: [line('atomic-habits'), line('psychology-of-money')],
-      method: 'express',
+      method: 'instant',
       payment: 'upi',
       placedAt: now - 31 * MINUTE,
       statusIndex: 4,
@@ -94,7 +103,7 @@ export function createSeedOrders(now: number = Date.now()): OrderRecord[] {
     buildRecord({
       number: 'BR1019',
       lines: [line('midnight-library'), line('deep-work'), line('ikigai')],
-      method: 'express',
+      method: 'instant',
       payment: 'card',
       placedAt: now - 3 * DAY,
       statusIndex: 5,

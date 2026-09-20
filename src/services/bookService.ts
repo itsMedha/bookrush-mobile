@@ -11,6 +11,7 @@ import type {
   SortOption,
 } from '@/types';
 import { GENRES } from '@/types';
+import { isInstant } from '@/utils/pricing';
 import { ApiError, mockRequest } from './http';
 
 const PAGE_SIZE = 12;
@@ -35,21 +36,21 @@ function relevance(book: Book, query: string): number {
 const sorters: Record<Exclude<SortOption, 'relevance'>, (a: Book, b: Book) => number> = {
   popular: (a, b) => b.ratingCount - a.ratingCount,
   rating: (a, b) => b.rating - a.rating || b.ratingCount - a.ratingCount,
-  'price-asc': (a, b) => a.price - b.price,
-  'price-desc': (a, b) => b.price - a.price,
+  'price-asc': (a, b) => a.purchasePrice - b.purchasePrice,
+  'price-desc': (a, b) => b.purchasePrice - a.purchasePrice,
 };
 
 export function filterBooks({
   query = '',
   genre,
   sort = 'relevance',
-  expressOnly = false,
+  instantOnly = false,
   minRating = 0,
 }: SearchParams): Book[] {
   const q = query.trim();
   let results = books.filter((book) => {
     if (genre && book.genre !== genre) return false;
-    if (expressOnly && !(book.expressDelivery && book.stock > 0)) return false;
+    if (instantOnly && !isInstant(book)) return false;
     if (book.rating < minRating) return false;
     return q ? relevance(book, q) > 0 : true;
   });
@@ -86,6 +87,31 @@ export const bookService = {
   getBooksByIds: (ids: string[]) => mockRequest(() => resolve(ids)),
 
   searchBooks: (params: SearchParams) => mockRequest(() => filterBooks(params)),
+
+  /** Titles a nearby store can deliver right now, soonest first. */
+  getInstantBooks: () =>
+    mockRequest(() =>
+      books
+        .filter(isInstant)
+        .sort((a, b) =>
+          a.delivery.type === 'INSTANT' && b.delivery.type === 'INSTANT'
+            ? a.delivery.etaMinutes - b.delivery.etaMinutes
+            : 0,
+        )
+        .slice(0, 10),
+    ),
+
+  getBestSellers: () =>
+    mockRequest(() => [...books].sort((a, b) => b.ratingCount - a.ratingCount).slice(0, 10)),
+
+  /** Biggest percentage savings, for the deals rail. */
+  getDeals: () =>
+    mockRequest(() =>
+      books
+        .filter((book) => book.mrp > book.purchasePrice)
+        .sort((a, b) => (b.mrp - b.purchasePrice) / b.mrp - (a.mrp - a.purchasePrice) / a.mrp)
+        .slice(0, 10),
+    ),
 
   getTrendingBooks: () => mockRequest(() => resolve(trendingBookIds)),
 

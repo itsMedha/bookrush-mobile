@@ -1,4 +1,4 @@
-import type { Book, Genre } from '@/types';
+import type { Book, DeliveryOption, Genre } from '@/types';
 
 /**
  * Curated catalogue. Covers come from Open Library by ISBN, so swapping in your own
@@ -22,7 +22,10 @@ interface BookSeed {
   year: number;
   description: string;
   stock?: number;
-  express?: boolean;
+  /** Minutes to deliver from a nearby store. Omit when no local store stocks it. */
+  etaMinutes?: number;
+  /** Rental fee in INR; omit for titles that are sale-only. */
+  rent?: number;
 }
 
 const seeds: BookSeed[] = [
@@ -42,6 +45,8 @@ const seeds: BookSeed[] = [
     description:
       'A practical guide to building good habits and breaking bad ones. Clear shows how tiny changes, compounded daily, transform who you are — without relying on willpower alone.',
     stock: 42,
+    etaMinutes: 32,
+    rent: 99,
   },
   {
     id: 'psychology-of-money',
@@ -59,6 +64,8 @@ const seeds: BookSeed[] = [
     description:
       'Nineteen short stories about how people think about money, and why doing well with it has less to do with intelligence than with behaviour. Timeless lessons on wealth, greed and happiness.',
     stock: 36,
+    etaMinutes: 28,
+    rent: 89,
   },
   {
     id: 'ikigai',
@@ -76,6 +83,7 @@ const seeds: BookSeed[] = [
     description:
       'The Japanese secret to a long and happy life. Drawing on the residents of Okinawa, the authors explore purpose, community and the small daily rituals that keep us meaningfully engaged.',
     stock: 58,
+    etaMinutes: 24,
   },
   {
     id: 'midnight-library',
@@ -93,6 +101,8 @@ const seeds: BookSeed[] = [
     description:
       'Between life and death there is a library, and within it, shelves of books that let Nora Seed try every life she might have lived. A warm, inventive novel about regret and second chances.',
     stock: 27,
+    etaMinutes: 41,
+    rent: 119,
   },
   {
     id: 'sapiens',
@@ -110,6 +120,8 @@ const seeds: BookSeed[] = [
     description:
       'A sweeping history of humankind, from the first stone tools to the age of artificial intelligence. Harari asks how a mid-sized ape came to dominate the planet — and where we go next.',
     stock: 31,
+    etaMinutes: 38,
+    rent: 129,
   },
   {
     id: 'deep-work',
@@ -127,6 +139,8 @@ const seeds: BookSeed[] = [
     description:
       'Rules for focused success in a distracted world. Newport makes the case that the ability to concentrate without distraction is becoming both rarer and more valuable — and how to train it.',
     stock: 44,
+    etaMinutes: 35,
+    rent: 99,
   },
   {
     id: 'zero-to-one',
@@ -144,6 +158,8 @@ const seeds: BookSeed[] = [
     description:
       'Notes on startups, or how to build the future. Thiel argues that the greatest companies create something new rather than copy what already works, and shares how to think about doing exactly that.',
     stock: 3,
+    etaMinutes: 52,
+    rent: 109,
   },
   {
     id: 'lean-startup',
@@ -161,6 +177,7 @@ const seeds: BookSeed[] = [
     description:
       'A scientific approach to building products under extreme uncertainty. Build, measure, learn: Ries shows how to test ideas quickly and steer before you run out of time or money.',
     stock: 25,
+    rent: 109,
   },
   {
     id: 'thinking-fast-and-slow',
@@ -178,6 +195,8 @@ const seeds: BookSeed[] = [
     description:
       'Nobel laureate Daniel Kahneman maps the two systems that drive how we think: one fast and intuitive, the other slow and deliberate. A landmark guide to judgement, bias and decision-making.',
     stock: 19,
+    etaMinutes: 45,
+    rent: 139,
   },
   {
     id: 'the-alchemist',
@@ -195,6 +214,7 @@ const seeds: BookSeed[] = [
     description:
       'Santiago, a young shepherd, sets out from Spain to Egypt in search of treasure and discovers something far more valuable. A fable about following your dreams and listening to your heart.',
     stock: 80,
+    etaMinutes: 19,
   },
   {
     id: 'project-hail-mary',
@@ -212,6 +232,8 @@ const seeds: BookSeed[] = [
     description:
       'A lone astronaut wakes up on a spaceship with no memory and the fate of Earth in his hands. Funny, clever and full of heart — the rare science-fiction novel you finish with a grin.',
     stock: 22,
+    etaMinutes: 47,
+    rent: 149,
   },
   {
     id: 'dune',
@@ -229,7 +251,7 @@ const seeds: BookSeed[] = [
     description:
       'On the desert planet Arrakis, young Paul Atreides is thrust into a struggle over the universe’s most precious substance. Politics, prophecy and ecology collide in this science-fiction epic.',
     stock: 33,
-    express: false,
+    rent: 119,
   },
   {
     id: 'the-hobbit',
@@ -247,6 +269,8 @@ const seeds: BookSeed[] = [
     description:
       'Bilbo Baggins would rather stay home with his pipe and armchair, until a wizard and thirteen dwarves whisk him away on an unexpected adventure to reclaim a treasure guarded by a dragon.',
     stock: 47,
+    etaMinutes: 26,
+    rent: 99,
   },
   {
     id: 'pride-and-prejudice',
@@ -264,6 +288,7 @@ const seeds: BookSeed[] = [
     description:
       'Elizabeth Bennet and the proud Mr Darcy misjudge each other spectacularly in Austen’s sparkling comedy of manners — still the benchmark for every slow-burn romance since.',
     stock: 90,
+    etaMinutes: 22,
   },
   {
     id: 'normal-people',
@@ -281,6 +306,7 @@ const seeds: BookSeed[] = [
     description:
       'Connell and Marianne grow up in the same small town but different worlds. Over the years their lives pull apart and together again in a quietly devastating story about class, love and intimacy.',
     stock: 29,
+    rent: 99,
   },
   {
     id: 'it-ends-with-us',
@@ -298,6 +324,8 @@ const seeds: BookSeed[] = [
     description:
       'Lily has always been resilient, but falling for charming neurosurgeon Ryle forces her to confront the hardest choices of her life. An emotional, unforgettable read.',
     stock: 51,
+    etaMinutes: 33,
+    rent: 89,
   },
   {
     id: 'mans-search-for-meaning',
@@ -315,6 +343,7 @@ const seeds: BookSeed[] = [
     description:
       'Psychiatrist Viktor Frankl recounts his years in Nazi concentration camps and the insight that carried him through: that our deepest drive is the search for meaning.',
     stock: 38,
+    etaMinutes: 29,
   },
   {
     id: 'cosmos',
@@ -349,6 +378,7 @@ const seeds: BookSeed[] = [
     description:
       'From the Big Bang to black holes, Hawking explains the biggest questions about the universe in language anyone can follow — and leaves you looking up at the night sky differently.',
     stock: 26,
+    rent: 99,
   },
   {
     id: 'clean-code',
@@ -366,6 +396,8 @@ const seeds: BookSeed[] = [
     description:
       'A handbook of agile software craftsmanship. Learn to tell good code from bad, and how to write code that is readable, maintainable and a pleasure to change.',
     stock: 18,
+    etaMinutes: 55,
+    rent: 179,
   },
   {
     id: 'pragmatic-programmer',
@@ -383,6 +415,7 @@ const seeds: BookSeed[] = [
     description:
       'Your journey to mastery. Timeless, practical advice on thinking like a programmer, from tracer bullets to orthogonality, refreshed for modern software development.',
     stock: 21,
+    rent: 199,
   },
   {
     id: 'designing-data-intensive-applications',
@@ -400,7 +433,7 @@ const seeds: BookSeed[] = [
     description:
       'The big ideas behind reliable, scalable and maintainable systems. Kleppmann walks through the fundamentals of storage, replication and stream processing with rare clarity.',
     stock: 12,
-    express: false,
+    rent: 229,
   },
   {
     id: 'design-of-everyday-things',
@@ -418,6 +451,8 @@ const seeds: BookSeed[] = [
     description:
       'Why do some products satisfy while others frustrate? Norman’s classic on human-centred design explains affordances, feedback and the psychology behind everything you touch.',
     stock: 16,
+    etaMinutes: 49,
+    rent: 139,
   },
   {
     id: 'rich-dad-poor-dad',
@@ -435,6 +470,7 @@ const seeds: BookSeed[] = [
     description:
       'What the rich teach their kids about money that the poor and middle class do not. A blunt, much-debated primer on assets, liabilities and financial independence.',
     stock: 64,
+    etaMinutes: 21,
   },
   {
     id: 'subtle-art',
@@ -452,6 +488,8 @@ const seeds: BookSeed[] = [
     description:
       'A counterintuitive approach to living a good life. Manson argues that improving our lives means getting better at choosing what to care about — and what to let go.',
     stock: 40,
+    etaMinutes: 27,
+    rent: 89,
   },
   {
     id: 'beach-read',
@@ -469,6 +507,8 @@ const seeds: BookSeed[] = [
     description:
       'A romance writer who no longer believes in love and a literary novelist with writer’s block swap genres for the summer. Witty, tender and impossible to put down.',
     stock: 34,
+    etaMinutes: 36,
+    rent: 99,
   },
   {
     id: 'name-of-the-wind',
@@ -486,6 +526,7 @@ const seeds: BookSeed[] = [
     description:
       'Kvothe, a legendary magician turned innkeeper, finally tells his own story: of a childhood in a troupe of travelling players, a brilliant mind, and a school of magic that changed everything.',
     stock: 23,
+    rent: 129,
   },
   {
     id: 'fourth-wing',
@@ -503,6 +544,8 @@ const seeds: BookSeed[] = [
     description:
       'Violet Sorrengail was meant to join the Scribe Quadrant, until her mother orders her to become a dragon rider instead. Deadly training, dangerous rivals and a bond that changes everything.',
     stock: 46,
+    etaMinutes: 31,
+    rent: 129,
   },
   {
     id: 'klara-and-the-sun',
@@ -520,6 +563,7 @@ const seeds: BookSeed[] = [
     description:
       'Klara, an Artificial Friend with extraordinary powers of observation, watches the world from a shop window and waits to be chosen. A quietly moving novel about love, loyalty and what it means to be human.',
     stock: 20,
+    rent: 109,
   },
   {
     id: 'song-of-achilles',
@@ -537,6 +581,8 @@ const seeds: BookSeed[] = [
     description:
       'Patroclus, a young exiled prince, is drawn to the golden Achilles. Their love story, set against the Trojan War, is retold with lyrical beauty and devastating force.',
     stock: 4,
+    etaMinutes: 43,
+    rent: 99,
   },
   {
     id: 'astrophysics-for-people-in-a-hurry',
@@ -554,6 +600,8 @@ const seeds: BookSeed[] = [
     description:
       'The universe, distilled. Tyson delivers the essential ideas of modern astrophysics in a compact, funny and thoroughly readable tour you can finish over a weekend.',
     stock: 37,
+    etaMinutes: 25,
+    rent: 89,
   },
   {
     id: 'range',
@@ -571,8 +619,23 @@ const seeds: BookSeed[] = [
     description:
       'Why generalists triumph in a specialised world. Epstein shows how breadth, experimentation and late starts often beat early specialisation in almost every field.',
     stock: 28,
+    rent: 109,
   },
 ];
+
+const STANDARD_ETA_TEXT = '2–4 days';
+export const RENTAL_DURATION_DAYS = 30;
+
+/**
+ * A title is instant only when a nearby store holds stock. Everything else falls back to
+ * standard shipping, and zero stock means it cannot be ordered at all.
+ */
+function deliveryFor(seed: BookSeed): DeliveryOption {
+  const stock = seed.stock ?? 25;
+  if (stock <= 0) return { type: 'UNAVAILABLE' };
+  if (seed.etaMinutes === undefined) return { type: 'STANDARD', etaText: STANDARD_ETA_TEXT };
+  return { type: 'INSTANT', etaMinutes: seed.etaMinutes };
+}
 
 export const books: Book[] = seeds.map((seed) => ({
   id: seed.id,
@@ -581,8 +644,10 @@ export const books: Book[] = seeds.map((seed) => ({
   coverUrl: openLibraryCover(seed.isbn),
   coverColor: seed.color,
   genre: seed.genre,
-  price: seed.price,
+  purchasePrice: seed.price,
   mrp: seed.mrp,
+  rental: seed.rent ? { price: seed.rent, durationDays: RENTAL_DURATION_DAYS } : undefined,
+  delivery: deliveryFor(seed),
   rating: seed.rating,
   ratingCount: seed.ratingCount,
   pages: seed.pages,
@@ -590,7 +655,6 @@ export const books: Book[] = seeds.map((seed) => ({
   language: 'English',
   description: seed.description,
   stock: seed.stock ?? 25,
-  expressDelivery: seed.express ?? true,
 }));
 
 export const booksById: ReadonlyMap<string, Book> = new Map(books.map((book) => [book.id, book]));
