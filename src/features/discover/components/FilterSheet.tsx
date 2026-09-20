@@ -13,18 +13,18 @@ import { RATING_OPTIONS, SORT_OPTIONS } from '../constants';
 
 export interface BrowseFilters {
   sort: SortOption;
-  expressOnly: boolean;
+  instantOnly: boolean;
   minRating: number;
 }
 
 export const DEFAULT_FILTERS: BrowseFilters = {
   sort: 'relevance',
-  expressOnly: false,
+  instantOnly: false,
   minRating: 0,
 };
 
-export const countActiveFilters = ({ sort, expressOnly, minRating }: BrowseFilters) =>
-  Number(sort !== 'relevance') + Number(expressOnly) + Number(minRating > 0);
+export const countActiveFilters = ({ sort, instantOnly, minRating }: BrowseFilters) =>
+  Number(sort !== 'relevance') + Number(instantOnly) + Number(minRating > 0);
 
 interface FilterSheetProps {
   visible: boolean;
@@ -97,8 +97,8 @@ function FilterForm({
           icon="flash-outline"
           title="30 min delivery only"
           subtitle="Show books available for express delivery"
-          value={draft.expressOnly}
-          onValueChange={(expressOnly) => setDraft((current) => ({ ...current, expressOnly }))}
+          value={draft.instantOnly}
+          onValueChange={(instantOnly) => setDraft((current) => ({ ...current, instantOnly }))}
         />
       </View>
 

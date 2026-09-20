@@ -9,17 +9,18 @@ import type { Book } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { routes } from '@/utils/routes';
 import { BookCover } from './BookCover';
-import { DeliveryBadge } from './DeliveryBadge';
+import { DeliveryAvailability } from './DeliveryAvailability';
 
 interface BookCardProps {
   book: Book;
   width?: number;
+  /** Off only in dense grids (the profile shelf) where the badge would crowd the layout. */
   showDelivery?: boolean;
 }
 
 export const BOOK_CARD_WIDTH = 132;
 
-function BookCardBase({ book, width = BOOK_CARD_WIDTH, showDelivery = false }: BookCardProps) {
+function BookCardBase({ book, width = BOOK_CARD_WIDTH, showDelivery = true }: BookCardProps) {
   const router = useRouter();
   const open = useCallback(() => router.push(routes.book(book.id)), [router, book.id]);
 
@@ -27,7 +28,7 @@ function BookCardBase({ book, width = BOOK_CARD_WIDTH, showDelivery = false }: B
     <PressableScale
       testID={`book-card-${book.id}`}
       accessibilityRole="button"
-      accessibilityLabel={`${book.title} by ${book.author}, ${formatPrice(book.price)}, rated ${book.rating}`}
+      accessibilityLabel={`${book.title} by ${book.author}, ${formatPrice(book.purchasePrice)}, rated ${book.rating}`}
       onPress={open}
       scaleTo={0.97}
       style={{ width }}
@@ -43,10 +44,10 @@ function BookCardBase({ book, width = BOOK_CARD_WIDTH, showDelivery = false }: B
         <View style={styles.footer}>
           <Rating value={book.rating} compact />
           <Text variant="bodySmall" weight="700">
-            {formatPrice(book.price)}
+            {formatPrice(book.purchasePrice)}
           </Text>
         </View>
-        {showDelivery ? <DeliveryBadge book={book} /> : null}
+        {showDelivery ? <DeliveryAvailability delivery={book.delivery} /> : null}
       </View>
     </PressableScale>
   );

@@ -9,7 +9,7 @@ import type { Book } from '@/types';
 import { formatPrice } from '@/utils/format';
 import { routes } from '@/utils/routes';
 import { BookCover } from './BookCover';
-import { DeliveryBadge } from './DeliveryBadge';
+import { DeliveryAvailability } from './DeliveryAvailability';
 import { Price } from './Price';
 
 interface BookRowProps {
@@ -30,7 +30,7 @@ function BookRowBase({ book, onPress }: BookRowProps) {
     <PressableScale
       testID={`book-row-${book.id}`}
       accessibilityRole="button"
-      accessibilityLabel={`${book.title} by ${book.author}, ${formatPrice(book.price)}`}
+      accessibilityLabel={`${book.title} by ${book.author}, ${formatPrice(book.purchasePrice)}`}
       onPress={open}
       scaleTo={0.985}
       style={styles.row}
@@ -45,8 +45,8 @@ function BookRowBase({ book, onPress }: BookRowProps) {
         </Text>
         <Rating value={book.rating} count={book.ratingCount} />
         <View style={styles.spacer} />
-        <Price price={book.price} mrp={book.mrp} />
-        <DeliveryBadge book={book} />
+        <Price price={book.purchasePrice} mrp={book.mrp} />
+        <DeliveryAvailability delivery={book.delivery} />
       </View>
     </PressableScale>
   );

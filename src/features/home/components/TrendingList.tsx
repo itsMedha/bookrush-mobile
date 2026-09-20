@@ -42,7 +42,7 @@ export function TrendingList({ books }: { books: Book[] }) {
                 <Rating value={book.rating} compact />
               </View>
               <Text variant="bodySmall" weight="700">
-                {formatPrice(book.price)}
+                {formatPrice(book.purchasePrice)}
               </Text>
             </PressableScale>
           </View>

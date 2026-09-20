@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AsyncBoundary } from '@/components/feedback/AsyncBoundary';
 import { Chip } from '@/components/ui/Chip';
@@ -6,11 +7,13 @@ import { PressableScale } from '@/components/ui/PressableScale';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Text } from '@/components/ui/Text';
 import { trendingSearches } from '@/data/books';
+import type { IconName } from '@/components/ui/Icon';
 import { useGenreCounts } from '@/features/books/hooks';
 import { useSearchStore } from '@/stores/searchStore';
 import { colors, layout, radius, spacing } from '@/theme';
 import type { Genre } from '@/types';
 import { pluralize } from '@/utils/format';
+import { routes } from '@/utils/routes';
 import { GENRE_ICONS } from '../constants';
 
 interface DiscoverIdleProps {
@@ -19,7 +22,50 @@ interface DiscoverIdleProps {
 }
 
 /** What Discover shows before the reader types: recents, trending searches and categories. */
+const SHELVES: {
+  testId: string;
+  label: string;
+  icon: IconName;
+  tint: string;
+  iconColor: 'accentText' | 'sageText';
+  href: string;
+}[] = [
+  {
+    testId: 'instant',
+    label: 'Instant delivery',
+    icon: 'flash',
+    tint: colors.accentSoft,
+    iconColor: 'accentText',
+    href: routes.discoverWith({ instant: true }),
+  },
+  {
+    testId: 'bestsellers',
+    label: 'Best sellers',
+    icon: 'trophy-outline',
+    tint: colors.sageSoft,
+    iconColor: 'sageText',
+    href: routes.discoverWith({ sort: 'popular' }),
+  },
+  {
+    testId: 'toprated',
+    label: 'Top rated',
+    icon: 'star-outline',
+    tint: colors.accentSoft,
+    iconColor: 'accentText',
+    href: routes.discoverWith({ sort: 'rating' }),
+  },
+  {
+    testId: 'budget',
+    label: 'Under ₹299',
+    icon: 'pricetag-outline',
+    tint: colors.sageSoft,
+    iconColor: 'sageText',
+    href: routes.discoverWith({ sort: 'price-asc' }),
+  },
+];
+
 export function DiscoverIdle({ onSearch, onGenre }: DiscoverIdleProps) {
+  const router = useRouter();
   const recent = useSearchStore((state) => state.recent);
   const removeRecent = useSearchStore((state) => state.removeRecent);
   const clearRecent = useSearchStore((state) => state.clearRecent);
@@ -27,6 +73,30 @@ export function DiscoverIdle({ onSearch, onGenre }: DiscoverIdleProps) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.section}>
+        <Text variant="heading3">Shop by</Text>
+        <View style={styles.shelves}>
+          {SHELVES.map((shelf) => (
+            <PressableScale
+              key={shelf.label}
+              testID={`shelf-${shelf.testId}`}
+              accessibilityRole="button"
+              accessibilityLabel={shelf.label}
+              onPress={() => router.navigate(shelf.href)}
+              scaleTo={0.97}
+              style={styles.shelf}
+            >
+              <View style={[styles.shelfIcon, { backgroundColor: shelf.tint }]}>
+                <Icon name={shelf.icon} size={18} color={shelf.iconColor} />
+              </View>
+              <Text variant="bodySmall" weight="700" numberOfLines={1}>
+                {shelf.label}
+              </Text>
+            </PressableScale>
+          ))}
+        </View>
+      </View>
+
       {recent.length > 0 ? (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -139,6 +209,26 @@ const styles = StyleSheet.create({
     minHeight: layout.minTouchTarget,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  shelves: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  shelf: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  shelfIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   tile: {
     flexBasis: '47%',

@@ -1,47 +1,76 @@
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
-import { FlatList, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { BookRail } from '@/components/books/BookRail';
 import { BookRailSkeleton } from '@/components/books/BookSkeletons';
-import { ContinueReadingCard } from '@/components/books/ContinueReadingCard';
 import { AsyncBoundary } from '@/components/feedback/AsyncBoundary';
 import { Screen } from '@/components/ui/Screen';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { useContinueReading, useRecommendedBooks, useTrendingBooks } from '@/features/books/hooks';
+import {
+  useBestSellers,
+  useDeals,
+  useInstantBooks,
+  useRecommendedBooks,
+  useTrendingBooks,
+} from '@/features/books/hooks';
 import { PostCard } from '@/features/community/components/PostCard';
 import { PostListSkeleton } from '@/features/community/components/PostSkeleton';
 import { useFeed } from '@/features/community/hooks';
 import { useRefresh } from '@/hooks/useRefresh';
 import { colors, layout, spacing } from '@/theme';
 import { routes } from '@/utils/routes';
-import { HomeHeader } from '../components/HomeHeader';
-import { QuickDeliveryBanner } from '../components/QuickDeliveryBanner';
+import { CategoryRail } from '../components/CategoryRail';
+import { InstantDeliveryBanner } from '../components/InstantDeliveryBanner';
+import { LocationBar } from '../components/LocationBar';
 import { TrendingList } from '../components/TrendingList';
 
 const REFRESH_ROOTS = [['books'], ['community', 'posts']] as const;
-const TRENDING_LIMIT = 5;
-
-const ContinueSeparator = () => <View style={styles.continueGap} />;
 
 function Section({ children, index }: { children: ReactNode; index: number }) {
   return (
-    <Animated.View entering={FadeInDown.duration(380).delay(index * 70)} style={styles.section}>
+    <Animated.View entering={FadeInDown.duration(380).delay(index * 60)} style={styles.section}>
       {children}
     </Animated.View>
   );
 }
 
+function RailSection({
+  title,
+  subtitle,
+  action,
+  onAction,
+  query,
+  index,
+}: {
+  title: string;
+  subtitle?: string;
+  action?: string;
+  onAction?: () => void;
+  query: ReturnType<typeof useInstantBooks>;
+  index: number;
+}) {
+  return (
+    <Section index={index}>
+      <SectionHeader title={title} subtitle={subtitle} actionLabel={action} onAction={onAction} />
+      <AsyncBoundary query={query} skeleton={<BookRailSkeleton />}>
+        {(books) => <BookRail books={books} />}
+      </AsyncBoundary>
+    </Section>
+  );
+}
+
 export default function HomeScreen() {
   const router = useRouter();
-  const continueReading = useContinueReading();
+  const instant = useInstantBooks();
+  const bestSellers = useBestSellers();
+  const deals = useDeals();
   const recommended = useRecommendedBooks();
   const trending = useTrendingBooks();
   const feed = useFeed('for-you');
   const { refreshing, onRefresh } = useRefresh(REFRESH_ROOTS);
-  const hasContinueReading = !(continueReading.isSuccess && continueReading.data.length === 0);
 
   return (
     <Screen>
@@ -53,61 +82,45 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />
         }
       >
-        <HomeHeader />
+        <LocationBar />
 
         <View style={styles.search}>
           <SearchBar
             testID="home-search"
+            placeholder="Search books, authors, ISBN..."
             onPress={() => router.navigate(routes.discoverWith({ focus: true }))}
           />
         </View>
 
-        {hasContinueReading ? (
-          <Section index={0}>
-            <SectionHeader title="Continue reading" />
-            <AsyncBoundary
-              query={continueReading}
-              skeleton={
-                <View style={styles.continueSkeleton}>
-                  <Skeleton width={280} height={112} radius="lg" />
-                  <Skeleton width={280} height={112} radius="lg" />
-                </View>
-              }
-            >
-              {(entries) => (
-                <FlatList
-                  horizontal
-                  data={entries}
-                  keyExtractor={(entry) => entry.book.id}
-                  renderItem={({ item }) => (
-                    <ContinueReadingCard book={item.book} progress={item.progress} />
-                  )}
-                  ItemSeparatorComponent={ContinueSeparator}
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.rail}
-                />
-              )}
-            </AsyncBoundary>
-          </Section>
-        ) : null}
+        <Section index={0}>
+          <InstantDeliveryBanner />
+        </Section>
 
         <Section index={1}>
-          <QuickDeliveryBanner />
+          <SectionHeader title="Shop by category" />
+          <CategoryRail />
         </Section>
 
-        <Section index={2}>
-          <SectionHeader
-            title="Recommended for you"
-            subtitle="Picked from what you have been reading"
-            actionLabel="See all"
-            onAction={() => router.navigate(routes.discoverWith({ sort: 'rating' }))}
-          />
-          <AsyncBoundary query={recommended} skeleton={<BookRailSkeleton />}>
-            {(books) => <BookRail books={books} />}
-          </AsyncBoundary>
-        </Section>
+        <RailSection
+          index={2}
+          title="Available near you"
+          subtitle="In stock at a store close by"
+          action="See all"
+          onAction={() => router.navigate(routes.discoverWith({ instant: true }))}
+          query={instant}
+        />
 
-        <Section index={3}>
+        <RailSection
+          index={3}
+          title="Best sellers"
+          action="See all"
+          onAction={() => router.navigate(routes.discoverWith({ sort: 'popular' }))}
+          query={bestSellers}
+        />
+
+        <RailSection index={4} title="Deals" subtitle="Biggest savings this week" query={deals} />
+
+        <Section index={5}>
           <SectionHeader
             title="Trending now"
             actionLabel="See all"
@@ -123,11 +136,18 @@ export default function HomeScreen() {
               </View>
             }
           >
-            {(books) => <TrendingList books={books.slice(0, TRENDING_LIMIT)} />}
+            {(books) => <TrendingList books={books.slice(0, 5)} />}
           </AsyncBoundary>
         </Section>
 
-        <Section index={4}>
+        <RailSection
+          index={6}
+          title="Recommended for you"
+          subtitle="Based on what you have been reading"
+          query={recommended}
+        />
+
+        <Section index={7}>
           <SectionHeader
             title="From the community"
             subtitle="What readers are talking about"
@@ -135,10 +155,10 @@ export default function HomeScreen() {
             onAction={() => router.navigate(routes.community)}
           />
           <View style={styles.posts}>
-            <AsyncBoundary query={feed} skeleton={<PostListSkeleton />}>
+            <AsyncBoundary query={feed} skeleton={<PostListSkeleton count={1} />}>
               {(posts) => (
                 <>
-                  {posts.slice(0, 2).map((post) => (
+                  {posts.slice(0, 1).map((post) => (
                     <PostCard key={post.id} post={post} />
                   ))}
                 </>
@@ -155,13 +175,6 @@ const styles = StyleSheet.create({
   content: { paddingBottom: spacing.huge, gap: spacing.xxl },
   search: { paddingHorizontal: layout.screenPadding, marginTop: -spacing.xs },
   section: { gap: spacing.lg },
-  rail: { paddingHorizontal: layout.screenPadding },
-  continueGap: { width: spacing.md },
-  continueSkeleton: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    paddingHorizontal: layout.screenPadding,
-  },
   trendingSkeleton: { gap: spacing.md, paddingHorizontal: layout.screenPadding },
   posts: { gap: spacing.md, paddingHorizontal: layout.screenPadding },
 });

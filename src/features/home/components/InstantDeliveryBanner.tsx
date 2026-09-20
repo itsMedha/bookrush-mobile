@@ -11,35 +11,35 @@ import { routes } from '@/utils/routes';
 const SHOWCASE_IDS = ['the-hobbit', 'deep-work', 'the-alchemist'] as const;
 const TILTS = [-10, 2, 12];
 
-/** The one dark, high-contrast block on Home: BookRush's core promise. */
-export function QuickDeliveryBanner() {
+/** The one dark, high-contrast block on Home. It states the whole product promise. */
+export function InstantDeliveryBanner() {
   const router = useRouter();
   const covers = SHOWCASE_IDS.map((id) => booksById.get(id)).filter((book) => book !== undefined);
 
   return (
     <View style={styles.wrapper}>
-      <View testID="quick-delivery" style={styles.banner}>
+      <View testID="instant-delivery" style={styles.banner}>
         <View style={styles.copy}>
           <View style={styles.eyebrow}>
             <Icon name="flash" size={13} color="accent" />
             <Text variant="overline" color="accent">
-              Quick delivery
+              Instant delivery
             </Text>
           </View>
           <Text variant="heading2" color="textInverse">
-            Books delivered to your door
+            Need a book now?
           </Text>
           <Text variant="bodySmall" color="textInverseMuted">
-            Get selected books in 30–60 min
+            Thousands of titles from a store near you, at your door in under an hour.
           </Text>
           <Button
-            label="Shop express books"
+            label="Shop instant delivery"
             variant="accent"
             size="sm"
             fullWidth={false}
             rightIcon="arrow-forward"
             style={styles.cta}
-            onPress={() => router.navigate(routes.discoverWith({ express: true }))}
+            onPress={() => router.navigate(routes.discoverWith({ instant: true }))}
           />
         </View>
         <View style={styles.covers}>

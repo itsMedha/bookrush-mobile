@@ -38,7 +38,7 @@ export default function DiscoverScreen() {
     focus?: string;
     genre?: string;
     sort?: string;
-    express?: string;
+    instant?: string;
     q?: string;
   }>();
   const { width } = useWindowDimensions();
@@ -51,7 +51,7 @@ export default function DiscoverScreen() {
   const [filters, setFilters] = useState<BrowseFilters>({
     ...DEFAULT_FILTERS,
     sort: isSortOption(params.sort) ? params.sort : 'relevance',
-    expressOnly: params.express === '1',
+    instantOnly: params.instant === '1',
   });
   const [gridMode, setGridMode] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -59,17 +59,17 @@ export default function DiscoverScreen() {
 
   // Tabs stay mounted, so incoming deep links (Home → "See all") must re-apply their params.
   // Adjusting state while rendering (instead of in an effect) avoids a wasted render pass.
-  const paramsKey = `${params.q}|${params.genre}|${params.sort}|${params.express}|${params.focus}`;
+  const paramsKey = `${params.q}|${params.genre}|${params.sort}|${params.instant}|${params.focus}`;
   const [appliedKey, setAppliedKey] = useState(paramsKey);
   if (paramsKey !== appliedKey) {
     setAppliedKey(paramsKey);
-    if (params.q || params.genre || params.sort || params.express || params.focus) {
+    if (params.q || params.genre || params.sort || params.instant || params.focus) {
       setQuery(params.q ?? '');
       setGenre(isGenre(params.genre) ? params.genre : undefined);
       setFilters({
         ...DEFAULT_FILTERS,
         sort: isSortOption(params.sort) ? params.sort : 'relevance',
-        expressOnly: params.express === '1',
+        instantOnly: params.instant === '1',
       });
       if (params.focus) setFocusToken((token) => token + 1);
     }
