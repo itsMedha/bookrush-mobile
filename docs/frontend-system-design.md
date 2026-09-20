@@ -5,9 +5,14 @@ the layering, where state lives, and the boundary between the UI and the data it
 
 ## Overview
 
-BookRush is a book app with two halves that share a catalogue. One half is commerce — find a
-book, order it, watch it arrive. The other is social — see what other readers are posting, join
-a club, talk about what you're reading.
+BookRush is quick commerce for books. The core loop is: find a book, see whether a store near
+you has a copy, buy or rent it, and get it delivered — instantly when it is stocked nearby,
+otherwise on standard shipping. Everything else in the app exists to feed that loop.
+
+A reader community sits alongside it. It is a real part of the product, not a bolt-on, but it
+is deliberately secondary: its job is to help people find books they can then order, so posts
+reference books and those references link straight into the same detail screen search would
+reach.
 
 There is no backend. Data comes from a local mock service layer that imitates a network: it
 adds latency, throws typed errors, and can be switched into a failing state from Settings. The
@@ -16,34 +21,91 @@ while keeping the seam where an API would go.
 
 ## Product scope
 
-The commerce flow:
+Two domains, one catalogue:
 
 ```
-Authentication
-     ↓
+                    BookRush
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+    BOOK COMMERCE            READER COMMUNITY
+          │                         │
+   ┌──────┴──────┐            ┌─────┴─────┐
+   │             │            │           │
+Discovery     Delivery       Feed       Clubs
+   │             │
+Buy / Rent   Instant /
+             Standard
+                 │
+              Orders
+                 │
+             Tracking
+```
+
+The primary flow:
+
+```
 Home / Discover
-     ↓
-Book details
-     ↓
-Cart
-     ↓
-Checkout
-     ↓
+      ↓
+Search or browse
+      ↓
+Book details  ──  availability · price · buy or rent
+      ↓
+Cart  ──  grouped by delivery speed
+      ↓
+Checkout  ──  address · delivery · payment
+      ↓
+Order confirmed
+      ↓
 Order tracking
 ```
 
-The community flow:
+Community feeds back into it rather than running parallel:
 
 ```
-Home
-  ↓
-Community feed
-  ↓
-Posts · Book clubs
+Community post
+      ↓
+Referenced book (price + ETA shown inline)
+      ↓
+Book details
+      ↓
+Buy / rent
 ```
 
-Both start from the tab bar, and books link across: a post can reference a book, which opens
-the same detail screen you'd reach from search.
+## Delivery and acquisition model
+
+Two decisions shape most of the commerce UI, so both live on the book itself rather than being
+worked out at checkout.
+
+**How fast it can arrive** is a tagged union:
+
+```ts
+type DeliveryOption =
+  | { type: 'INSTANT'; etaMinutes: number }
+  | { type: 'STANDARD'; etaText: string }
+  | { type: 'UNAVAILABLE' };
+```
+
+`INSTANT` carries its own ETA because it depends on which nearby store holds the title — in the
+sample catalogue those range from 19 to 55 minutes. Making it a union rather than a boolean
+means the "unavailable" case can't be forgotten, and every screen renders it through one
+component (`DeliveryAvailability`), so `⚡ 32 min` means the same thing on a card, in search
+results, on the detail screen and in the cart.
+
+**How you get it** is buy or rent. Rentals are optional per title (`rental?: { price,
+durationDays }`), so sale-only books simply don't show the picker. The chosen mode rides on the
+cart line, which is what makes the price, the order summary and the order history line differ.
+
+A basket can mix both fulfilment types. Rather than forcing a single speed, the cart splits
+into groups and checkout only offers instant when every item qualifies:
+
+```
+canDeliverInstant(items)  → every item is INSTANT
+splitByDelivery(items)    → { instant: [...], standard: [...] }
+instantEtaRange(items)    → slowest item + a 10 min picking buffer
+```
+
+The slowest item decides the quote because one rider collects the whole order.
 
 ## Architecture
 
@@ -85,8 +147,9 @@ src/
     feedback/             AsyncBoundary, ToastHost
     navigation/           the custom tab bar
     brand/                wordmark
-  features/               auth, home, discover, books, cart, checkout,
-                          orders, community, profile, addresses
+  features/               commerce:  home, discover, books, cart,
+                                     checkout, orders, addresses
+                          supporting: community, profile, auth
   services/               mock API + query client/keys
   stores/                 Zustand stores
   data/                   sample catalogue, users, posts, clubs, orders
@@ -157,7 +220,7 @@ Adding to cart — no network involved, so it doesn't go through Query at all:
 
 ```
 AddToCartButton
-      ↓ add(book)
+      ↓ add(book, mode)      ← 'buy' or 'rent'
 cartStore (Zustand)
       ↓
 persisted to AsyncStorage
@@ -326,16 +389,18 @@ No benchmarks were run. These are structural choices, not measured wins.
 ## Testing
 
 ```
-Pure logic        pricing rules, delivery eligibility, currency formatting, status helpers
+Pure logic        pricing (buy vs rent), instant eligibility, basket splitting, ETA quoting,
+                  currency formatting, order status helpers
 State             cart store — merging, stock caps, selectors
 Services          search ranking, filters, pagination, 404s, offline, the order clock
-Components        Button, QuantityStepper, BookCard, AddToCartButton
-Flows             cart screen (totals, quantity, remove + undo), login validation,
-                  post like/save/follow
+Components        Button, QuantityStepper, BookCard, DeliveryAvailability, AddToCartButton
+Flows             cart screen (totals, quantity, remove + undo, mixed-delivery grouping,
+                  buy↔rent switching), login validation, post like/save/follow
 ```
 
-58 tests. The bias is toward logic that's easy to get wrong and expensive to notice — pricing,
-stock limits, the order state machine — plus the interactions a user would actually hit.
+66 tests. The bias is toward logic that's easy to get wrong and expensive to notice — pricing,
+delivery eligibility, stock limits, the order state machine — plus the interactions a user
+would actually hit.
 
 Reanimated, gesture handler and vector icons are mocked in `jest.setup.ts`; they need a native
 runtime and aren't what these tests are checking.
@@ -358,6 +423,15 @@ for custom native code, which this app doesn't need.
 
 **A custom tab bar.** The default one couldn't do the animated pill and the active-order dot,
 and a tab bar is small enough to own.
+
+**Delivery as a union, not a boolean.** The earlier model had `expressDelivery: boolean`, which
+could not express "available, but in 52 minutes" or "we don't stock this at all". Widening it to
+a tagged union cost a refactor across the cart, checkout and order code, but it moved
+availability into the type system: every render site has to handle the unavailable case.
+
+**One cart line per book.** Adding a book you already have as a rental switches that line's mode
+rather than creating a second line. Allowing both at once would mean keying the cart by
+book-and-mode and complicating every quantity and removal path, for a case people rarely want.
 
 **Colocated tests.** Keeping tests beside the code makes it obvious what's covered when you open
 a folder, at the cost of a slightly noisier tree than a top-level `tests/`.

@@ -1,24 +1,29 @@
 # BookRush
 
-BookRush is a mobile app for discovering books, ordering them for delivery, and talking about
-them with other readers. Built with React Native, Expo and TypeScript.
+BookRush is a quick-commerce app for books. Find a book, see whether a store near you has it,
+buy or rent it, and get it delivered — instantly if it is in stock nearby, or on standard
+shipping if it isn't. A reader community sits alongside the shopping experience for working out
+what to read next.
+
+Built with React Native, Expo and TypeScript.
 
 <p align="center">
   <img src="docs/screenshots/home.png" width="24%" alt="Home" />
   <img src="docs/screenshots/book-detail.png" width="24%" alt="Book details" />
+  <img src="docs/screenshots/cart.png" width="24%" alt="Cart" />
   <img src="docs/screenshots/tracking.png" width="24%" alt="Order tracking" />
-  <img src="docs/screenshots/community.png" width="24%" alt="Community feed" />
 </p>
 
 ## Features
 
-- Browse and search books, with categories, sorting and filters
-- Book details with ratings, reviews, delivery estimate and recommendations
-- Cart and checkout, including address and delivery options
-- Order tracking with a live status timeline
-- Reader community — posts, likes, comments, and a composer
-- Book clubs with a current read and discussion
-- Profile with your shelf, reviews, posts and order history
+- Browse and search books by title, author or category
+- Per-title delivery availability — instant from a nearby store, standard shipping, or unavailable
+- Buy a book or rent it for 30 days
+- Cart that groups items by how fast they will arrive
+- Checkout with address, delivery speed and payment
+- Live order tracking with a delivery timeline
+- Order history with one-tap reorder
+- Reader community — posts, likes, comments, book clubs
 
 ## Tech stack
 
@@ -48,9 +53,12 @@ Screens compose components and call hooks; they never call services directly. An
 server-shaped (books, feed, orders) goes through TanStack Query, while client-owned state (cart,
 session, likes) lives in Zustand.
 
-[`docs/frontend-system-design.md`](docs/frontend-system-design.md) goes into the detail — how
-state is split and why, the data flow for the main screens, the navigation tree, the design
-token layering, how order tracking is simulated, and the trade-offs behind those choices.
+Delivery availability is a first-class part of the book model rather than something discovered
+at checkout, so the same badge renders on cards, search results, the detail screen and the cart.
+
+[`docs/frontend-system-design.md`](docs/frontend-system-design.md) covers the detail — the
+commerce and community domains and how they connect, how state is split, data flow for the main
+screens, the delivery and rental model, how order tracking is simulated, and the trade-offs.
 
 ## Running locally
 
@@ -78,12 +86,13 @@ npm run validate     # all three, same as CI
 
 There is no backend. Data comes from a mock service layer in `src/services` that adds latency
 and can be made to fail, so loading, empty and error states are all reachable during
-development. The service functions are shaped like API calls, so swapping in a real client
-means changing those files and nothing above them.
+development. The service functions are shaped like API calls, so swapping in a real client means
+changing those files and nothing above them.
 
-Order tracking is simulated locally: the order service stores which stage an order is in and
-advances it over time, and the tracking screen polls for updates the way it would against a
-real endpoint.
+Stock and delivery are simulated per title in the sample catalogue: some books are held by a
+nearby store with their own ETA, some ship standard only, and one is out of stock. Order
+tracking advances on a timer inside the order service, and the tracking screen polls for
+updates the way it would against a real endpoint.
 
 Two switches in **Profile → Settings** help when trying the app out — one makes every request
 fail so you can see the error states, and one resets the demo data.
